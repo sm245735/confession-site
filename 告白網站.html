@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<!-- saved from url=(0051)http://155.248.193.159:5601/static/loveletter3.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>告白網站</title>
+    <!-- 引入 Bootstrap -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            background: black;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .word {
+            position: absolute;
+            font-size: 16px;
+            animation: float 5s infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+        }
+
+        .confession-text {
+            position: absolute;
+            top: 10%;
+            text-align: center;
+            font-size: 24px;
+            color: #FFD700;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            box-shadow: 0 0 15px #FFD700;
+        }
+
+        .button-container {
+            position: absolute;
+            bottom: 20px;
+            text-align: center;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div id="info_text" class="confession-text">
+        妹妹，這段時間和妳相處真的很開心，每次見到妳都讓我覺得對生活更充滿動力（欸真的是這樣，不知道為啥），我發現已經很習慣了有妳在日常中的感覺，也很期待每一次的見面，我很喜歡妳，希望有機會讓我們的關係更進一步。<br>
+雖然我們認識才三個月，工作地點也有些距離，但我們幾乎每兩天都會一起吃飯，而且妳之前也每天都從中和騎車上班，這讓我覺得距離似乎也沒那麼遠xD<br>
+不管妳的答案是什麼，我都很感謝妳花在與我相處的青春，也希望我們的關係還是可以很自然<br>
+    </div>
+ <audio id="bgm" src="2_23AM.mp3" autoplay="" loop="">
+        您的瀏覽器不支援 audio 元素。
+    </audio>
+    <script>
+
+        // 漂浮的愛字效果
+        const words = [
+            "愛", "Love", "Amour", "Liebe", "Amore", "Любовь", "사랑","حب", "愛情", "Szeretet", "Ljubav", "Mahal", "Laska",
+            "Armastus", "Milovat", "Aşk", "Dragoste", "Miłość",
+            "Rakkaus", "Kärlek", "Cinta", "Sevgi", "Pag-ibig",
+            "Kjærlighet", "Любов", "Një dashuri"
+        ];
+
+        const createWord = () => {
+            const word = document.createElement('span');
+            word.innerText = words[Math.floor(Math.random() * words.length)];
+            word.className = 'word';
+            const size = Math.random() * 20 + 10; // 字體大小
+            word.style.fontSize = `${size}px`;
+            word.style.color = `hsl(${Math.random() * 360}, 100%, 70%)`; // 隨機顏色
+            word.style.top = `${Math.random() * window.innerHeight}px`;
+            word.style.left = `${Math.random() * window.innerWidth}px`;
+            word.style.animationDuration = `${Math.random() * 5 + 3}s`;
+
+            document.body.appendChild(word);
+
+            setTimeout(() => {
+                word.remove();
+            }, 8000); // 設定移除時間
+        };
+
+        setInterval(createWord, 300); // 每隔300毫秒生成新單字
+
+        // 煙火效果
+        const startFireworks = () => {
+            const canvas = document.createElement('canvas');
+            document.body.appendChild(canvas);
+
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+
+            const createParticle = (x, y, color) => {
+                const particle = {
+                    x,
+                    y,
+                    radius: Math.random() * 5 + 2, // 增大粒子半徑
+                    color,
+                    velocityX: (Math.random() - 0.5) * 10, // 增大水平速度
+                    velocityY: (Math.random() - 0.5) * 10, // 增大垂直速度
+                    life: 150, // 增加粒子壽命
+                };
+                particles.push(particle);
+            };
+
+            const createFirework = () => {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height / 2; // 煙火從上半部生成
+                const colors = ['#FF4500', '#FFD700', '#1E90FF', '#32CD32', '#FF69B4'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+
+                for (let i = 0; i < 150; i++) { // 增加粒子數量
+                    createParticle(x, y, color);
+                }
+            };
+
+            const updateParticles = () => {
+                particles.forEach((particle, index) => {
+                    particle.x += particle.velocityX;
+                    particle.y += particle.velocityY;
+                    particle.radius *= 0.98; // 粒子逐漸縮小
+                    particle.life--;
+
+                    if (particle.life <= 0 || particle.radius <= 0.1) {
+                        particles.splice(index, 1);
+                    }
+                });
+            };
+
+            const drawParticles = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach(particle => {
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                    const gradient = ctx.createRadialGradient(
+                        particle.x, particle.y, 0,
+                        particle.x, particle.y, particle.radius
+                    );
+                    gradient.addColorStop(0, particle.color);
+                    gradient.addColorStop(0.5, "white"); // 增加亮度
+                    gradient.addColorStop(1, "transparent");
+                    ctx.fillStyle = gradient;
+                    ctx.fill();
+                });
+            };
+
+            const animate = () => {
+                updateParticles();
+                drawParticles();
+
+                if (Date.now() - startTime < 60000) { // 60秒
+                    requestAnimationFrame(animate);
+                } else {
+                    canvas.remove();
+                }
+            };
+
+            let startTime = Date.now();
+            setInterval(createFirework, 400); // 煙火生成頻率
+            animate();
+        };
+
+        const onYesClicked = () => {
+            startFireworks();
+            const noButton = document.getElementById('noButton');
+            noButton.classList.remove('btn-danger');
+            noButton.classList.add('btn-default');
+            noButton.disabled = true; // 禁用按鈕
+
+            // 撥放音樂
+	    const bgm = document.getElementById('bgm');
+
+            // 檢查音樂是否正在播放
+            if (bgm.paused) {
+                bgm.play().then(() => {
+                    console.log('音樂正在播放');
+                }).catch(error => {
+                    console.log('無法播放音樂:', error);
+                });
+            } else {
+                bgm.pause();
+                bgm.currentTime = 0; // 重置音樂到起始位置
+                console.log('音樂已暫停');
+            }
+	    const yesButton = document.getElementById("yesButton");
+	    yesButton.innerText = "謝謝妳 妳真漂亮";
+	    yesButton.disabled = true;
+	    document.getElementById("info_text").innerText = "謝謝妳 真的很開心能夠有這個機會和妳在一起";
+        };
+    </script>
+
+    <div class="button-container">
+        <button id="yesButton" class="btn btn-success" onclick="onYesClicked()" style="z-index:3000;">好</button>
+        <button id="noButton" class="btn btn-danger" onclick="alert(&#39;不喜歡沒關係，還是祝妳幸福喔！&#39;)" style="z-index:3000;">忍痛放棄</button>
+    </div>
+
+    <!-- 引入 Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js"></script>
+
+
+
+<span class="word" style="font-size: 25.6397px; color: rgb(200, 102, 255); top: 192.156px; left: 1041.45px; animation-duration: 6.58724s;">愛情</span><span class="word" style="font-size: 28.4838px; color: rgb(128, 255, 102); top: 509.419px; left: 928.531px; animation-duration: 7.85353s;">Amour</span><span class="word" style="font-size: 16.8915px; color: rgb(102, 118, 255); top: 104.804px; left: 1188.52px; animation-duration: 6.42085s;">Liebe</span><span class="word" style="font-size: 25.1072px; color: rgb(102, 245, 255); top: 319.876px; left: 584.746px; animation-duration: 4.29479s;">Любов</span><span class="word" style="font-size: 16.5239px; color: rgb(255, 102, 104); top: 556.601px; left: 386.835px; animation-duration: 4.12056s;">حب</span><span class="word" style="font-size: 27.9734px; color: rgb(255, 102, 236); top: 405.429px; left: 1020.69px; animation-duration: 4.96618s;">Love</span><span class="word" style="font-size: 10.1761px; color: rgb(102, 193, 255); top: 54.5278px; left: 859.122px; animation-duration: 7.32412s;">Cinta</span><span class="word" style="font-size: 25.2517px; color: rgb(153, 255, 102); top: 451.498px; left: 237.038px; animation-duration: 6.97028s;">Cinta</span><span class="word" style="font-size: 19.7203px; color: rgb(255, 102, 146); top: 399.779px; left: 184.757px; animation-duration: 4.085s;">Mahal</span><span class="word" style="font-size: 19.6221px; color: rgb(255, 176, 102); top: 440.981px; left: 350.406px; animation-duration: 7.75324s;">Ljubav</span><span class="word" style="font-size: 24.1721px; color: rgb(102, 255, 218); top: 439.495px; left: 1134.89px; animation-duration: 6.79928s;">Aşk</span><span class="word" style="font-size: 10.8455px; color: rgb(102, 255, 207); top: 135.051px; left: 556.497px; animation-duration: 4.62427s;">Szeretet</span><span class="word" style="font-size: 21.3452px; color: rgb(209, 102, 255); top: 461.402px; left: 400.909px; animation-duration: 4.74543s;">Amour</span><span class="word" style="font-size: 25.2069px; color: rgb(255, 134, 102); top: 441.586px; left: 94.1186px; animation-duration: 5.65888s;">Ljubav</span><span class="word" style="font-size: 14.5417px; color: rgb(171, 102, 255); top: 210.154px; left: 1060.38px; animation-duration: 5.01894s;">Amour</span><span class="word" style="font-size: 23.0984px; color: rgb(184, 255, 102); top: 472.054px; left: 639.49px; animation-duration: 6.11777s;">Armastus</span><span class="word" style="font-size: 16.4532px; color: rgb(102, 255, 255); top: 49.1545px; left: 375.653px; animation-duration: 7.55411s;">Miłość</span><span class="word" style="font-size: 28.6879px; color: rgb(222, 102, 255); top: 229.929px; left: 233.327px; animation-duration: 7.35296s;">Любов</span><span class="word" style="font-size: 23.4363px; color: rgb(255, 157, 102); top: 558.258px; left: 1027.12px; animation-duration: 4.97967s;">Kärlek</span><span class="word" style="font-size: 10.1621px; color: rgb(102, 255, 246); top: 196.713px; left: 1019.22px; animation-duration: 3.73706s;">Milovat</span><span class="word" style="font-size: 17.9707px; color: rgb(102, 169, 255); top: 460.809px; left: 238.233px; animation-duration: 6.30962s;">愛情</span><span class="word" style="font-size: 22.2569px; color: rgb(255, 141, 102); top: 397.9px; left: 179.226px; animation-duration: 3.72271s;">Amour</span><span class="word" style="font-size: 16.8621px; color: rgb(102, 255, 186); top: 25.7067px; left: 305.098px; animation-duration: 7.36264s;">Rakkaus</span><span class="word" style="font-size: 20.385px; color: rgb(102, 195, 255); top: 407.905px; left: 727.477px; animation-duration: 3.63355s;">Amour</span><span class="word" style="font-size: 12.4233px; color: rgb(255, 109, 102); top: 411.795px; left: 1172.3px; animation-duration: 5.7834s;">Любов</span><span class="word" style="font-size: 20.5739px; color: rgb(102, 255, 108); top: 296.002px; left: 1243.5px; animation-duration: 6.53502s;">Любовь</span><span class="word" style="font-size: 20.2564px; color: rgb(102, 195, 255); top: 399.177px; left: 1082.03px; animation-duration: 4.5287s;">사랑</span></body></html>
