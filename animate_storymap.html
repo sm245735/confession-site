@@ -206,7 +206,7 @@
       const folderPath = 'images/' + card.folderName;
       const apiUrl = 'https://api.github.com/repos/' + owner + '/' + repo +
     		     '/contents/' + folderPath + '?ref=' + branch;
-      const GITHUB_TOKEN = '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'
+      const GITHUB_TOKEN = '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';
         fetch(apiUrl, {
 	    headers: {
 	      'Authorization': 'token ' + GITHUB_TOKEN,
@@ -225,6 +225,7 @@
 		 console.log(pic_url);
 	         return pic_url;
 	      });
+	  });
 	    
       
       // 支援絕對與相對路徑，並移除錯誤前綴
