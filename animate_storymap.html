@@ -203,7 +203,29 @@
       const owner = 'sm245735';
       const repo = 'confession-site';
       const branch = 'main';
-      // const folderPath = 'images/' + card.folderName;
+      const folderPath = 'images/' + card.folderName;
+      const apiUrl = 'https://api.github.com/repos/' + owner + '/' + repo +
+    		     '/contents/' + folderPath + '?ref=' + branch;
+      const GITHUB_TOKEN = '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'
+        fetch(apiUrl, {
+	    headers: {
+	      'Authorization': 'token ' + GITHUB_TOKEN,
+	      'Accept': 'application/vnd.github.v3+json'
+	    }
+	  })
+	  .then(function(res) {
+	    if (!res.ok) throw new Error(res.status);
+	    return res.json();
+	  })
+	  .then(function(files) {
+	    const imageUrls = files
+	      .filter(function(f) { return f.type === 'file'; })
+	      .map(function(f) {
+		 let pic_url = 'https://raw.githubusercontent.com/' + owner + '/' + repo + '/' + branch + '/' + folderPath + '/' + encodeURIComponent(f.name);
+		 console.log(pic_url);
+	         return pic_url;
+	      });
+	    
       
       // 支援絕對與相對路徑，並移除錯誤前綴
       const imgs = card.images.split('|').map(img => {
