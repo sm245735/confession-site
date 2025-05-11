@@ -20,13 +20,16 @@ jobs:
 
       - name: 掃描所有資料夾並產生 JSON
         run: |
-          folders=$(find images -type d -mindepth 1)
-          for folder in $folders; do
-            basename=$(basename "$folder")
-            out="image-list/$basename.json"
-            ls "$folder" | jq -R . | jq -s . > "$out"
-            echo "產生：$out"
-          done
+          # 用 -print0 讓每個路徑後面加 \0，避免空格分割
+          find images -mindepth 1 -maxdepth 1 -type d -print0 \
+          | while IFS= read -r -d '' folder; do
+              basename=$(basename "$folder")
+              out="image-list/$basename.json"
+              # ls 時也要加 --quoting-style=literal 保留原名
+              ls --quoting-style=literal "$folder" \
+                | jq -R . | jq -s . > "$out"
+              echo "產生：$out"
+            done
 
       - name: Commit & Push
         run: |
