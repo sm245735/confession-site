@@ -1,5 +1,8 @@
 name: 產生圖片清單
 
+permissions:
+  contents: write
+
 on:
   push:
     paths:
