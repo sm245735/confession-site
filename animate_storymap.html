@@ -221,9 +221,10 @@
 	        .map(name => `<div class="swiper-slide">
 	                         <img src="${makeRawUrl(card.folderName, name)}" class="w-full">
 	                       </div>`)
-		      console.log(imgs);
+		     
 	        .join('');
-	    
+	      console.log(imgs);
+	    });
       
       // 支援絕對與相對路徑，並移除錯誤前綴
       const imgs = card.images.split('|').map(img => {
