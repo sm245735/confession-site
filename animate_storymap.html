@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Story Map</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+
+        /* 1. 登入區塊專屬樣式，不影響其他區域 */
+    #login-screen {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #FFEDE2, #FFF9F3);
+      font-family: "微軟正黑體", sans-serif;
+      z-index: 100;
+    }
+    #login-screen .login-box {
+      width: 300px;
+      padding: 30px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    #login-screen input {
+      width: 100%;
+      padding: 10px;
+      margin: 12px 0;
+      border: 1.5px solid #FFD1D1;
+      border-radius: 8px;
+    }
+    #login-screen button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #FF8C94;
+      color: #fff;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    #login-screen button:hover {
+      background: #FF6F61;
+    }
+    #login-screen .error {
+      color: #E05A63;
+      display: none;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    /* 2. 主畫面（地圖＋卡片）預設隱藏 */
+    #main-screen {
+      display: none;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      /* 你可以在這裡加上地圖或卡片的全域佈局背景 */
+    }
+    #map { height: 100vh; width: 100vw; z-index: 0; }
+    .story-card {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      z-index: 999;
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      max-width: 550px;
+      display: none;
+    }
+    .story-card.active {
+      display: block;
+    }
+    /* 手機（或 max-width ≤ 768px）時，卡片最大寬度 200px，並置中 */
+    @media (max-width: 768px) {
+  	.story-card {
+    	     max-width: 250px;
+	     margin: 0 auto;    /* 自動左右置中 */
+ 	    /*bottom: -10px!important;*/
+        }
+    .toggle-btn {
+        /* 固定寬高，至少 44px */
+        width: 33px;
+        height: 33px;
+        /* 文字大小也一起放大 */
+        font-size: 1.25rem;  /* 約 20px */
+        /* 置中對齊 icon */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* 增加點擊範圍 */
+        padding: 0;
+      }
+    /* 讓 .arrow 可以被旋轉 */
+    .toggle-btn .arrow {
+      display: inline-block;               /* transform 生效 */
+      transition: transform .3s ease;      /* 平滑過渡 */
+      font-size: 1rem;                  /* 視需求調整大小 */
+      line-height: 1;                      /* 避免行高干擾 */
+    }
+    
+    /* aria-expanded="false" 時，箭頭往右 */
+    .toggle-btn[aria-expanded="false"] .arrow {
+      transform: rotate(-90deg);
+      height: 88px !important;
+    	}
+    }
+
+    .entry-icon {
+	vertical-align: middle;  /* 跟文字同一基線 */
+	margin-right: 6px;        /* 圖標與文字之間空間 */ 
+    }
+    .entry-title {
+        font-size: 18px;
+        color: #333;  
+	display: inline-flex;
+        align-items: center;      /* 內部子項垂直置中 */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 登入區 -->
+  <div id="login-screen">
+    <div class="login-box">
+      <h2>專屬密碼鎖 🔒</h2>
+      <input type="password" id="password" placeholder="請輸入小秘密">
+      <button onclick="doLogin()">進入日記</button>
+      <div class="error" id="err">密碼錯誤，再試一次～</div>
+    </div>
+  </div>
+    
+    <!-- 主畫面：地圖 + 卡片 -->
+    <div id="main-screen">
+       <div id="map"></div>
+       <div id="story-container"></div>
+    </div>
+  <script>
+
+    // 假設小於等於 768px 我們就當成手機
+    const isMobile = window.innerWidth <= 768;
+    const centerLat = isMobile ? 24 : 23.8;
+    const Level = isMobile ? 7 : 8;
+    const larger_style = isMobile ? "" : "style=\"font-size: 1.2rem;\"";
+    
+    const map = L.map('map').setView([centerLat, 121], Level);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap 貢獻者'
+    }).addTo(map);
+
+
+    // 登入相關程式
+    function doLogin() {
+      const pass = document.getElementById("password").value;
+      const validPass = "1131229";  // 改成你的密碼
+
+      if (pass === validPass) {
+        // 隱藏登入、顯示主畫面
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("main-screen").style.display = "block";
+
+         // 2. 等一下再重算地圖大小
+        setTimeout(() => {
+            map.invalidateSize(true);
+        }, 200);
+
+      } else {
+        document.getElementById("err").style.display = "block";
+      }
+    }
+
+    // 支援按 Enter 鍵登入
+    document.getElementById("password")
+      .addEventListener("keydown", e => {
+        if (e.key === "Enter") doLogin();
+      });
+
+    
+
+    const icons = {
+      arrow: L.icon({iconUrl: 'https://cdn-icons-png.flaticon.com/512/4439/4439420.png', iconSize: [40, 40]}),
+      eat: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/1531/1531385.png', iconSize: [40, 40] }),
+      walk: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/2591/2591439.png', iconSize: [40, 40] }),
+      health: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/2382/2382461.png', iconSize: [40, 40] })
+    };
+
+    function createCard(card, index) {
+      const cardDiv = document.createElement('div');
+      cardDiv.className = 'story-card';
+      cardDiv.id = `card-${index}`;
+
+      // 支援絕對與相對路徑，並移除錯誤前綴
+      const imgs = card.images.split('|').map(img => {
+        const raw = img.replace(/^img\//, '');
+        const src = /https?:\/\//.test(raw) ? raw : `img/${raw}`;
+        return `<div class="swiper-slide"><img src="${src}" class="w-full"></div>`;
+      }).join('');
+
+      cardDiv.innerHTML = `
+	<div class="card-header p-4 flex justify-between items-center">
+	    <h2 class="text-lg font-bold entry-title">
+		<a href="javascript:;" onclick="if(confirm('確定要前往？')) window.open('${card.google_map_link}', '_blank')"
+		   class="inline-flex items-center space-x-2"
+		>
+		<img src="https://cdn-icons-png.flaticon.com/512/1865/1865269.png" alt="📌" class="ew-5 h-5 flex-shrink-0">
+                &nbsp;
+		${card.title}
+		</a>
+	</h2>
+	    <!-- 收合按鈕 -->
+	    <button class="toggle-btn text-gray-500 hover:text-gray-800 focus:outline-none" aria-expanded="true" aria-label="收合／展開">
+	       <span class="arrow">▼</span>
+	    </button>
+	  </div>
+	<div class="card-body overflow-hidden transition-max-h duration-300 max-h-[1000px]">
+        	<div class="swiper">
+	          <div class="swiper-wrapper">${imgs}</div>
+        	  <div class="swiper-pagination"></div>
+	        </div>
+        	<div class="p-4">
+
+	          <p class="text-sm text-gray-500" ${larger_style} >${card.time} | ${card.subtitle}</p>
+        	  <p class="mt-2 text-sm" ${larger_style}>${card.content}</p>
+	        </div>
+	</div>
+      `;
+      document.getElementById('story-container').appendChild(cardDiv);
+    }
+
+    function showCard(index) {
+      document.querySelectorAll('.story-card').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(`card-${index}`);
+      if (target) target.classList.add('active');
+    }
+
+    fetch('./data/diary.csv')
+      .then(res => res.text())
+      .then(csvText => {
+        Papa.parse(csvText, {
+          header: true,
+          dynamicTyping: true,
+          complete: function(results) {
+            const rows = results.data.filter(r => r.lat && r.lng);
+            rows.forEach((row, index) => {
+              const marker = L.marker([row.lat, row.lng], { icon: icons[row.type] || icons.walk }).addTo(map);
+              marker.on('click', () => showCard(index));
+              createCard(row, index);
+            });
+
+            setTimeout(() => {
+              document.querySelectorAll('.swiper').forEach(swiperEl => {
+                new Swiper(swiperEl, {
+                  autoHeight: true, // 自動調整高度
+                  loop: true,
+                  pagination: { el: swiperEl.querySelector('.swiper-pagination') }
+                });
+              });
+              showCard(0);
+            }, 100);
+          }
+        });
+      });
+    // 1. 在初始化階段就加一次
+    const container = document.getElementById('story-container');
+    container.addEventListener('click', e => {
+      // 找最近的 toggle-btn （支援點到裡面文字時也能抓到）
+      const btn = e.target.closest('.toggle-btn');
+      if (!btn) return;
+    
+      // 再找出這個按鈕的卡片與內容區
+      const card = btn.closest('.story-card');
+      const body = card.querySelector('.card-body');
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+    
+      if (expanded) {
+        body.classList.add('max-h-0');
+        btn.textContent = '►';
+        btn.setAttribute('aria-expanded', 'false');
+      } else {
+        body.classList.remove('max-h-0');
+        btn.textContent = '▼';
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  </script>
+</body>
+</html>
+
