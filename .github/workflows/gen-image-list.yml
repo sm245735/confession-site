@@ -1,0 +1,34 @@
+name: 產生圖片清單
+
+on:
+  push:
+    paths:
+      - 'images/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: 建立 image-list 資料夾
+        run: mkdir -p image-list
+
+      - name: 掃描所有資料夾並產生 JSON
+        run: |
+          folders=$(find images -type d -mindepth 1)
+          for folder in $folders; do
+            basename=$(basename "$folder")
+            out="image-list/$basename.json"
+            ls "$folder" | jq -R . | jq -s . > "$out"
+            echo "產生：$out"
+          done
+
+      - name: Commit & Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add image-list/
+          git commit -m "🤖 自動更新 image-list" || echo "沒有變更"
+          git push
