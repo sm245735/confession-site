@@ -199,6 +199,12 @@
       cardDiv.className = 'story-card';
       cardDiv.id = `card-${index}`;
 
+      // 2025.05.11 取得照片方式改以github api
+      const owner = 'sm245735';
+      const repo = 'confession-site';
+      const branch = 'main';
+      // const folderPath = 'images/' + card.folderName;
+      
       // 支援絕對與相對路徑，並移除錯誤前綴
       const imgs = card.images.split('|').map(img => {
         const raw = img.replace(/^img\//, '');
