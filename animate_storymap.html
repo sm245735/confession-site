@@ -224,7 +224,7 @@
       // 拉取圖片清單 JSON
       //const jsonUrl = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@main/image-list/${encodeURIComponent(card.folderName)}.json`;
       const jsonUrl = `./image-list/${encodeURIComponent(card.folderName)}.json`;
-	    const imgs  ='';
+	    let imgs  ='';
 	  fetch(jsonUrl)
 	    .then(res => {
 	      if (!res.ok) throw new Error(`讀取 JSON 失敗 ${res.status}`);
@@ -238,17 +238,7 @@
 	                       </div>`)
 		     
 	        .join('');
-	      console.log(imgs);
-	    });
-      
-      // 支援絕對與相對路徑，並移除錯誤前綴
-      //const imgs = card.images.split('|').map(img => {
-      //  const raw = img.replace(/^img\//, '');
-      //  const src = /https?:\/\//.test(raw) ? raw : `img/${raw}`;
-      //  return `<div class="swiper-slide"><img src="${src}" class="w-full"></div>`;
-      // }).join('');
-
-      cardDiv.innerHTML = `
+	      cardDiv.innerHTML = `
 	<div class="card-header p-4 flex justify-between items-center">
 	    <h2 class="text-lg font-bold entry-title">
 		<a href="javascript:;" onclick="if(confirm('確定要前往？')) window.open('${card.google_map_link}', '_blank')"
@@ -277,6 +267,16 @@
 	</div>
       `;
       document.getElementById('story-container').appendChild(cardDiv);
+	    });
+      
+      // 支援絕對與相對路徑，並移除錯誤前綴
+      //const imgs = card.images.split('|').map(img => {
+      //  const raw = img.replace(/^img\//, '');
+      //  const src = /https?:\/\//.test(raw) ? raw : `img/${raw}`;
+      //  return `<div class="swiper-slide"><img src="${src}" class="w-full"></div>`;
+      // }).join('');
+
+      
     }
 
     function showCard(index) {
