@@ -206,10 +206,14 @@
 
       // Helper：給定 folderName 跟 image 檔名，回傳完整 raw URL
       function makeRawUrl(folderName, fileName) {
-         return `https://cdn.jsdelivr.net/gh/${owner}/${repo}@main/images/${encodeURIComponent(folderName)}/${encodeURIComponent(fileName)}`;
+	      // let raw_url = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@main/images/${encodeURIComponent(folderName)}/${encodeURIComponent(fileName)}`;
+	      let raw_url = `./images/${encodeURIComponent(folderName)}/${encodeURIComponent(fileName)}`;
+         return raw_url;
       }
       // 拉取圖片清單 JSON
-      const jsonUrl = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@main/image-list/${encodeURIComponent(card.folderName)}.json`;
+      //const jsonUrl = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@main/image-list/${encodeURIComponent(card.folderName)}.json`;
+      const jsonUrl = `./image-list/${encodeURIComponent(card.folderName)}.json`;
+	    const imgs  ='';
 	  fetch(jsonUrl)
 	    .then(res => {
 	      if (!res.ok) throw new Error(`讀取 JSON 失敗 ${res.status}`);
@@ -217,7 +221,7 @@
 	    })
 	    .then(files => {
 	      // 把檔名陣列轉成 <div class="swiper-slide"><img …></div> 字串
-	      const imgs = files
+	      imgs = files
 	        .map(name => `<div class="swiper-slide">
 	                         <img src="${makeRawUrl(card.folderName, name)}" class="w-full">
 	                       </div>`)
@@ -227,11 +231,11 @@
 	    });
       
       // 支援絕對與相對路徑，並移除錯誤前綴
-      const imgs = card.images.split('|').map(img => {
-        const raw = img.replace(/^img\//, '');
-        const src = /https?:\/\//.test(raw) ? raw : `img/${raw}`;
-        return `<div class="swiper-slide"><img src="${src}" class="w-full"></div>`;
-      }).join('');
+      //const imgs = card.images.split('|').map(img => {
+      //  const raw = img.replace(/^img\//, '');
+      //  const src = /https?:\/\//.test(raw) ? raw : `img/${raw}`;
+      //  return `<div class="swiper-slide"><img src="${src}" class="w-full"></div>`;
+      // }).join('');
 
       cardDiv.innerHTML = `
 	<div class="card-header p-4 flex justify-between items-center">
