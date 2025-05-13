@@ -87,20 +87,17 @@
     /* 手機（或 max-width ≤ 768px）時，卡片最大寬度 200px，並置中 */
     @media (max-width: 768px) {
   	.story-card {
-    	     /* 改用 fixed 把卡片固定在視窗底部 */
+    	    /* 固定在視窗底部，靠左留 16px 距離 */
 	    position: fixed !important;
 	    bottom: 10px !important;
+	    left: 16px !important;     /* 靠左 16px，你想留多少就改這裡 */
+	    right: auto !important;    /* 不要同時指定 right */
 	
-	    /* 讓左右同時貼邊，再用 margin auto 置中 */
-	    left: 0 !important;
-	    right: 0 !important;
-	    margin: 0 auto !important;
+	    /* 寬度撐滿剩餘空間 (減掉左右留白) */
+	    width: calc(60vw - 32px) !important;  /* 100vw 扣掉左右各16px */
+	    max-width: 350px !important;           /* 大螢幕別太寬 */
 	
-	    /* 寬度撐滿 60vw，上限 350px */
-	    width: 60vw !important;
-	    max-width: 350px !important;
-	
-	    /* 清除任何舊有的 transform */
+	    /* 清掉 transform 才不會被 Safari 搞亂 */
 	    transform: none !important;
 	    -webkit-transform: none !important;
         }
