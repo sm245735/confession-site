@@ -218,8 +218,8 @@
 
       // Helper：給定 folderName 跟 image 檔名，回傳完整 raw URL
       function makeRawUrl(folderName, fileName) {
-	      // let raw_url = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@main/images/${encodeURIComponent(folderName)}/${encodeURIComponent(fileName)}`;
-	      let raw_url = `./images/${encodeURIComponent(folderName)}/${encodeURIComponent(fileName)}`;
+	      let raw_url = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@main/images/${encodeURIComponent(folderName)}/${encodeURIComponent(fileName)}`;
+	      // let raw_url = `./images/${encodeURIComponent(folderName)}/${encodeURIComponent(fileName)}`;	      
          return raw_url;
       }
       // 拉取圖片清單 JSON
@@ -268,16 +268,8 @@
 	</div>
       `;
       document.getElementById('story-container').appendChild(cardDiv);
-	    });
-      
-      // 支援絕對與相對路徑，並移除錯誤前綴
-      //const imgs = card.images.split('|').map(img => {
-      //  const raw = img.replace(/^img\//, '');
-      //  const src = /https?:\/\//.test(raw) ? raw : `img/${raw}`;
-      //  return `<div class="swiper-slide"><img src="${src}" class="w-full"></div>`;
-      // }).join('');
-
-      
+	    });      
+     
     }
 
     function showCard(index) {
