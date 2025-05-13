@@ -87,9 +87,22 @@
     /* 手機（或 max-width ≤ 768px）時，卡片最大寬度 200px，並置中 */
     @media (max-width: 768px) {
   	.story-card {
-    	     max-width: 250px;
-	     margin: 0 auto;    /* 自動左右置中 */
- 	    /*bottom: -10px!important;*/
+    	     /* 改用 fixed 把卡片固定在視窗底部 */
+	    position: fixed !important;
+	    bottom: 10px !important;
+	
+	    /* 讓左右同時貼邊，再用 margin auto 置中 */
+	    left: 0 !important;
+	    right: 0 !important;
+	    margin: 0 auto !important;
+	
+	    /* 寬度撐滿 60vw，上限 350px */
+	    width: 60vw !important;
+	    max-width: 350px !important;
+	
+	    /* 清除任何舊有的 transform */
+	    transform: none !important;
+	    -webkit-transform: none !important;
         }
     .toggle-btn {
         /* 固定寬高，至少 44px */
