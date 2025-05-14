@@ -14,25 +14,7 @@
   <link rel="stylesheet" href="./css/card.css" />
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <style>
-
-       
-
-    /* 2. 主畫面（地圖＋卡片）預設隱藏 */
-    #main-screen {
-      display: none;
-      height: 100vh;
-      margin: 0;
-      padding: 0;
-      /* 你可以在這裡加上地圖或卡片的全域佈局背景 */
-    }
-    #map { 
-	width: 100%;    /* 取代 100vw 避免iphone破版 */
-  	height: 100vh;  /* 保留滿高 */
-	z-index: 0; 
-    }
-    
-
+  <style> 
 .leaflet-control.filter-control {
   position: relative;
 }
@@ -112,8 +94,6 @@
 .filter-panel li:hover {
   color: #1f2937;
 }
-
-	  
    
 @media (max-width: 480px) {
   .leaflet-control.filter-control .filter-panel {
@@ -143,345 +123,328 @@
   </style>
 </head>
 <body>
-
-  <!-- 登入區 -->
-  <div id="login-screen">
-    <div class="login-box">
-      <h2>專屬密碼鎖 🔒</h2>
-      <input type="password" id="password" placeholder="請輸入小秘密">
-      <button onclick="doLogin()">進入日記</button>
-      <div class="error" id="err">密碼錯誤，再試一次～</div>
-    </div>
-  </div>
-    
-    <div id="main-screen">		
-       <div id="map"></div>
-       <div id="story-container"></div>
-    </div>
-	<!-- 篩選面板 -->
-  <div id="filter-panel"
-	class="hidden absolute top-14 left-4 z-50 bg-white p-4 rounded shadow w-64 max-h-[70vh] overflow-auto filter-panel">
-    <input id="filter-input"
-  	 type="text"
-  	 placeholder="輸入篩選關鍵字…"
-  	 class="w-full mb-2 p-2 border rounded">
-    <div id="filter-results" class="text-sm space-y-2">
-  	<!-- 這裡會動態填入分組後的 <details>…</details> -->
-    </div>
-  </div>
-  <script>
-  
-
-    // 假設小於等於 768px 我們就當成手機
-    const isMobile = window.innerWidth <= 768;
-    const centerLat = isMobile ? 24 : 23.8;
-    const Level = isMobile ? 7 : 8;
-    const larger_style = isMobile ? "" : "style=\"font-size: 1.2rem;\"";
-    
-    const map = L.map('map').setView([centerLat, 121], Level);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap 貢獻者'
-    }).addTo(map);
-    // 宣告資料全域變數
-    window.locdata =[];
-    window.locmarkers =[];
-
-    // 登入相關程式
-    function doLogin() {
-      const pass = document.getElementById("password").value;
-      const validPass = "1131229";  // 改成你的密碼
-
-      if (pass === validPass) {
-        // 隱藏登入、顯示主畫面
-        document.getElementById("login-screen").style.display = "none";
-        document.getElementById("main-screen").style.display = "block";
-
-         // 2. 等一下再重算地圖大小
-        setTimeout(() => {
-            map.invalidateSize(true);
-        }, 200);
-
-      } else {
-        document.getElementById("err").style.display = "block";
-      }
-    }
-
-    // 支援按 Enter 鍵登入
-    document.getElementById("password")
-      .addEventListener("keydown", e => {
-        if (e.key === "Enter") doLogin();
-      });
-
-	  // 地圖icon
- const icons = {
-      arrow: L.icon({iconUrl: 'https://cdn-icons-png.flaticon.com/512/4439/4439420.png', iconSize: [40, 40]}),
-      eat: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/3109/3109780.png', iconSize: [40, 40] }),
-      walk: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/2591/2591439.png', iconSize: [40, 40] }),
-      health: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/2382/2382461.png', iconSize: [40, 40] }),
-      buy: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/9284/9284424.png', iconSize: [40, 40] }),
-      bubbleTea: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/3081/3081162.png', iconSize: [40, 40] }),
-      motorcycle: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/1023/1023346.png', iconSize: [40, 40] }),
-    };
-function IconNameMaper(eng_name){
-	let chi_name = '尚未定義';
-	if(eng_name =="arrow"){
-	   chi_name = '射箭';
-	}
-	if(eng_name =="eat"){
-	   chi_name = '飯飯';
-	}
-	if(eng_name =="walk"){
-	   chi_name = '逛逛';
-	}
-	if(eng_name =="health"){
-	   chi_name = '健康';
-	}
-	if(eng_name =="buy"){
-	   chi_name = '買買買';
-	}
-	if(eng_name =="bubbleTea"){
-	   chi_name = '奶茶';
-	}
-	if(eng_name =="motorcycle"){
-	   chi_name = '車車';
-	}
-	return chi_name;
-}
-	
-    // 用 forEach取出icon與屬性的對應
-    // 之後結果篩選會用到
-    const categoryIcons = {};
-    Object.keys(icons).forEach(type => {
-      categoryIcons[type] = icons[type].options.iconUrl;
-    });
-    // 結果長這樣：
-    // {
-    //   arrow:      'https://cdn-icons-png.flaticon.com/512/4439/4439420.png',
-    //   eat:        'https://cdn-icons-png.flaticon.com/512/1531/1531385.png',
-    //   walk:       'https://cdn-icons-png.flaticon.com/512/2591/2591439.png',
-    //   …
-    // }
-	  
-
-// 1. 定義一個 FilterControl（放大鏡 + 面板）
-  const FilterControl = L.Control.extend({
-    options: { position: 'topleft' },  // 顯示在左上角
-    onAdd(map) {
-      // 容器
-      const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control filter-control');
-      // 按鈕
-      const btn = L.DomUtil.create('a', 'filter-btn', container);
-      btn.href = '#';
-      btn.title = '篩選地點';
-      btn.innerHTML = '🔍';
-  
-      // 面板
-      const panel = L.DomUtil.create('div', 'filter-panel hidden', container);
-      // 輸入框
-      const input = L.DomUtil.create('input', '', panel);
-      input.type = 'text';
-      input.placeholder = '輸入關鍵字篩選...';
-      input.className = 'p-1 border rounded w-full box-border mb-3';
-  
-      // 篩選結果容器
-      const results = L.DomUtil.create('div', 'filter-results space-y-4 text-gray-700 text-sm', panel);
-  
-      // 阻止點擊事件冒泡到地圖
-      L.DomEvent.disableClickPropagation(container);
-      L.DomEvent.on(btn, 'click', e => {
-        L.DomEvent.stop(e);
-        panel.classList.toggle('hidden');
-        //if (!panel.classList.contains('hidden')) input.focus();
-	const isOpen = !panel.classList.toggle('hidden');
-	if (isOpen) {
-	// 動態取按鈕在視窗的位置
-	const rect = btn.getBoundingClientRect();
-	// 固定定位，緊貼按鈕右下方
-	panel.style.position = 'fixed';
-	panel.style.top  = `${rect.bottom}px`;
-	panel.style.left = `${rect.right + 4}px`; // 右邊留4px間距
-	panel.style.transform = 'none';
-	input.focus();
-	}
-      });
-  
-      // 處理輸入即時篩選
-      L.DomEvent.on(input, 'input', () => {
-        const q = input.value.trim().toLowerCase();
-        // 根據 rows 與 markers, cardDivs（需事先在全域或上層作用域準備好這三個陣列）
-        const groups = {};
-        window.locdata.forEach((row, i) => {
-          const title = row.title.toLowerCase();
-          if (!q || title.includes(q)) {
-            groups[row.type] = groups[row.type] || [];
-            groups[row.type].push(i);
-          }
-        });
-  
-        // 清空並渲染結果
-        results.innerHTML = '';
-        Object.entries(groups).forEach(([type, idxs]) => {
-	  const iconUrl = categoryIcons[type] || '';
-          const det = document.createElement('details');
-          det.open = true;
-          det.innerHTML = `
-            <summary class="font-medium cursor-pointer">
-	    	${iconUrl ? `<img src="${iconUrl}" class="category-icon" alt="${type} icon">`: ''} ${IconNameMaper(type)} (${idxs.length})
-            </summary>
-            <ul class="pl-4 list-disc">
-              ${idxs.map(i => `<li data-idx="${i}">${window.locdata[i].title}</li>`).join('')}
-            </ul>
-          `;
-          results.appendChild(det);
-        });
-  
-        // 同步地圖 Marker & 卡片顯示
-        window.locdata.forEach((_, i) => {
-          const match = Object.values(groups).flat().includes(i);
-          // Marker
-          if (match) window.locmarkers[i].addTo(map);
-          else map.removeLayer(window.locmarkers[i]);
-          // 卡片
-          const cardEl = document.getElementById(`card-${i}`);
-          cardEl.style.display = match ? '' : 'none';
-        });
-      });
-
-      // 這行會攔截 panel 上的滾輪事件，不讓它往地圖傳遞
-      L.DomEvent.disableScrollPropagation(container);
-	    
-      return container;
-    }
-  });
-  // 把剛剛建立的 Control 加到地圖
-  map.addControl(new FilterControl());
-
-   
-
-    function createCard(card, index) {
-      const cardDiv = document.createElement('div');
-      cardDiv.className = 'story-card';
-      cardDiv.id = `card-${index}`;
-
-      // 2025.05.11 取得照片方式改以github workflow
-      const owner  = 'sm245735';
-      const repo   = 'confession-site';
-      const branch = 'main';
-
-      // Helper：給定 folderName 跟 image 檔名，回傳完整 raw URL
-      function makeRawUrl(folderName, fileName) {
-	      let raw_url = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@main/images/${encodeURIComponent(folderName)}/${encodeURIComponent(fileName)}`;
-	      // let raw_url = `./images/${encodeURIComponent(folderName)}/${encodeURIComponent(fileName)}`;	      
-         return raw_url;
-      }
-      // 拉取圖片清單 JSON
-      //const jsonUrl = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@main/image-list/${encodeURIComponent(card.folderName)}.json`;
-      const jsonUrl = `./image-list/${encodeURIComponent(card.folderName)}.json`;
-	    let imgs  ='';
-	  fetch(jsonUrl)
-	    .then(res => {
-	      if (!res.ok) throw new Error(`讀取 JSON 失敗 ${res.status}`);
-	      return res.json();
-	    })
-	    .then(files => {
-	      // 把檔名陣列轉成 <div class="swiper-slide"><img …></div> 字串
-	      imgs = files
-	        .map(name => `<div class="swiper-slide">
-	                         <img src="${makeRawUrl(card.folderName, name)}" class="w-full">
-	                       </div>`)
-		     
-	        .join('');
-	      cardDiv.innerHTML = `
-	<div class="card-header p-4 flex justify-between items-center">
-	    <h2 class="text-lg font-bold entry-title">
-		<a href="javascript:;" onclick="if(confirm('確定要前往？')) window.open('${card.google_map_link}', '_blank')"
-		   class="inline-flex items-center space-x-2"
-		>
-		<img src="https://cdn-icons-png.flaticon.com/512/1865/1865269.png" alt="📌" class="ew-5 h-5 flex-shrink-0">
-                &nbsp;
-		${card.title}
-		</a>
-	</h2>
-	    <!-- 收合按鈕 -->
-	    <button class="toggle-btn text-gray-500 hover:text-gray-800 focus:outline-none" aria-expanded="true" aria-label="收合／展開">
-	       <span class="arrow">▼</span>
-	    </button>
-	  </div>
-	<div class="card-body overflow-hidden transition-max-h duration-300 max-h-[1000px]">
-        	<div class="swiper">
-	          <div class="swiper-wrapper">${imgs}</div>
-        	  <div class="swiper-pagination"></div>
-	        </div>
-        	<div class="p-4">
-
-	          <p class="text-sm text-gray-500" ${larger_style} >${card.time} | ${card.subtitle}</p>
-        	  <p class="mt-2 text-sm" ${larger_style}>${card.content}</p>
-	        </div>
+<div id="login-screen">
+	<div class="login-box">
+		<h2>專屬密碼鎖 🔒</h2><input id="password" placeholder="請輸入小秘密" type="password"> <button onclick="doLogin()">進入日記</button>
+		<div class="error" id="err">
+			密碼錯誤，再試一次～
+		</div>
 	</div>
-      `;
-      document.getElementById('story-container').appendChild(cardDiv);
-	    });      
-     
-    }
-
-    function showCard(index) {
-      document.querySelectorAll('.story-card').forEach(el => el.classList.remove('active'));
-      const target = document.getElementById(`card-${index}`);
-      if (target) target.classList.add('active');
-    }
-
-    fetch('./data/diary.csv')
-      .then(res => res.text())
-      .then(csvText => {
-        Papa.parse(csvText, {
-          header: true,
-          dynamicTyping: true,
-          complete: function(results) {
-            const rows = results.data.filter(r => r.lat && r.lng);
-	    window.locdata = rows;
-            rows.forEach((row, index) => {
-              const marker = L.marker([row.lat, row.lng], { icon: icons[row.type] || icons.walk }).addTo(map);
-	      window.locmarkers.push(marker)
-              marker.on('click', () => showCard(index));
-              createCard(row, index);
-            });
-
-            setTimeout(() => {
-              document.querySelectorAll('.swiper').forEach(swiperEl => {
-                new Swiper(swiperEl, {
-                  autoHeight: true, // 自動調整高度
-                  loop: true,
-                  pagination: { el: swiperEl.querySelector('.swiper-pagination') }
-                });
-              });
-              showCard(0);
-            }, 100);
-          }
-        });
-      });
-    // 1. 在初始化階段就加一次
-    const container = document.getElementById('story-container');
-    container.addEventListener('click', e => {
-      // 找最近的 toggle-btn （支援點到裡面文字時也能抓到）
-      const btn = e.target.closest('.toggle-btn');
-      if (!btn) return;
-    
-      // 再找出這個按鈕的卡片與內容區
-      const card = btn.closest('.story-card');
-      const body = card.querySelector('.card-body');
-      const expanded = btn.getAttribute('aria-expanded') === 'true';
-    
-      if (expanded) {
-        body.classList.add('max-h-0');
-        btn.textContent = '►';
-        btn.setAttribute('aria-expanded', 'false');
-      } else {
-        body.classList.remove('max-h-0');
-        btn.textContent = '▼';
-        btn.setAttribute('aria-expanded', 'true');
-      }
-    });
-  </script>
+</div>
+<div id="main-screen">
+	<div id="map"></div>
+	<div id="story-container"></div>
+</div><!-- 篩選面板 -->
+<div class="hidden absolute top-14 left-4 z-50 bg-white p-4 rounded shadow w-64 max-h-[70vh] overflow-auto filter-panel" id="filter-panel">
+	<input class="w-full mb-2 p-2 border rounded" id="filter-input" placeholder="輸入篩選關鍵字…" type="text">
+	<div class="text-sm space-y-2" id="filter-results">
+		<!-- 這裡會動態填入分組後的 <details>…</details> -->
+	</div>
+</div>
+<script>
+  	// 假設小於等於 768px 我們就當成手機
+	const isMobile = window.innerWidth <= 768;
+	const centerLat = isMobile ? 24 : 23.8;
+	const Level = isMobile ? 7 : 8;
+	const larger_style = isMobile ? "" : "style=\"font-size: 1.2rem;\"";
+	const map = L.map('map').setView([centerLat, 121], Level);
+	L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		attribution: '© OpenStreetMap 貢獻者'
+	}).addTo(map);
+	// 宣告資料全域變數
+	window.locdata = [];
+	window.locmarkers = [];
+	// 登入相關程式
+	function doLogin() {
+		const pass = document.getElementById("password").value;
+		const validPass = "1131229"; // 改成你的密碼
+		if (pass === validPass) {
+			// 隱藏登入、顯示主畫面
+			document.getElementById("login-screen").style.display = "none";
+			document.getElementById("main-screen").style.display = "block";
+			// 2. 等一下再重算地圖大小
+			setTimeout(() => {
+				map.invalidateSize(true);
+			}, 200);
+		} else {
+			document.getElementById("err").style.display = "block";
+		}
+	}
+	// 支援按 Enter 鍵登入
+	document.getElementById("password").addEventListener("keydown", e => {
+		if (e.key === "Enter") doLogin();
+	});
+	// 地圖icon
+	const icons = {
+		arrow: L.icon({
+			iconUrl: 'https://cdn-icons-png.flaticon.com/512/4439/4439420.png',
+			iconSize: [40, 40]
+		}),
+		eat: L.icon({
+			iconUrl: 'https://cdn-icons-png.flaticon.com/512/3109/3109780.png',
+			iconSize: [40, 40]
+		}),
+		walk: L.icon({
+			iconUrl: 'https://cdn-icons-png.flaticon.com/512/2591/2591439.png',
+			iconSize: [40, 40]
+		}),
+		health: L.icon({
+			iconUrl: 'https://cdn-icons-png.flaticon.com/512/2382/2382461.png',
+			iconSize: [40, 40]
+		}),
+		buy: L.icon({
+			iconUrl: 'https://cdn-icons-png.flaticon.com/512/9284/9284424.png',
+			iconSize: [40, 40]
+		}),
+		bubbleTea: L.icon({
+			iconUrl: 'https://cdn-icons-png.flaticon.com/512/3081/3081162.png',
+			iconSize: [40, 40]
+		}),
+		motorcycle: L.icon({
+			iconUrl: 'https://cdn-icons-png.flaticon.com/512/1023/1023346.png',
+			iconSize: [40, 40]
+		}),
+	};
+	
+	function IconNameMaper(eng_name) {
+		let chi_name = '尚未定義';
+		if (eng_name == "arrow") {
+			chi_name = '射箭';
+		}
+		if (eng_name == "eat") {
+			chi_name = '飯飯';
+		}
+		if (eng_name == "walk") {
+			chi_name = '逛逛';
+		}
+		if (eng_name == "health") {
+			chi_name = '健康';
+		}
+		if (eng_name == "buy") {
+			chi_name = '買買買';
+		}
+		if (eng_name == "bubbleTea") {
+			chi_name = '奶茶';
+		}
+		if (eng_name == "motorcycle") {
+			chi_name = '車車';
+		}
+		return chi_name;
+	}
+	// 用 forEach取出icon與屬性的對應
+	// 之後結果篩選會用到
+	const categoryIcons = {};
+	Object.keys(icons).forEach(type => {
+		categoryIcons[type] = icons[type].options.iconUrl;
+	});
+	// 結果長這樣：
+	// {
+	//   arrow:      'https://cdn-icons-png.flaticon.com/512/4439/4439420.png',
+	//   eat:        'https://cdn-icons-png.flaticon.com/512/1531/1531385.png',
+	//   walk:       'https://cdn-icons-png.flaticon.com/512/2591/2591439.png',
+	//   …
+	// }
+	// 1. 定義一個 FilterControl（放大鏡 + 面板）
+	const FilterControl = L.Control.extend({
+		options: {
+			position: 'topleft'
+		}, // 顯示在左上角
+		onAdd(map) {
+			// 容器
+			const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control filter-control');
+			// 按鈕
+			const btn = L.DomUtil.create('a', 'filter-btn', container);
+			btn.href = '#';
+			btn.title = '篩選地點';
+			btn.innerHTML = '🔍';
+			// 面板
+			const panel = L.DomUtil.create('div', 'filter-panel hidden', container);
+			// 輸入框
+			const input = L.DomUtil.create('input', '', panel);
+			input.type = 'text';
+			input.placeholder = '輸入關鍵字篩選...';
+			input.className = 'p-1 border rounded w-full box-border mb-3';
+			// 篩選結果容器
+			const results = L.DomUtil.create('div', 'filter-results space-y-4 text-gray-700 text-sm', panel);
+			// 阻止點擊事件冒泡到地圖
+			L.DomEvent.disableClickPropagation(container);
+			L.DomEvent.on(btn, 'click', e => {
+				L.DomEvent.stop(e);
+				panel.classList.toggle('hidden');
+				//if (!panel.classList.contains('hidden')) input.focus();
+				const isOpen = !panel.classList.toggle('hidden');
+				if (isOpen) {
+					// 動態取按鈕在視窗的位置
+					const rect = btn.getBoundingClientRect();
+					// 固定定位，緊貼按鈕右下方
+					panel.style.position = 'fixed';
+					panel.style.top = `${rect.bottom}px`;
+					panel.style.left = `${rect.right + 4}px`; // 右邊留4px間距
+					panel.style.transform = 'none';
+					input.focus();
+				}
+			});
+			// 處理輸入即時篩選
+			L.DomEvent.on(input, 'input', () => {
+				const q = input.value.trim().toLowerCase();
+				// 根據 rows 與 markers, cardDivs（需事先在全域或上層作用域準備好這三個陣列）
+				const groups = {};
+				window.locdata.forEach((row, i) => {
+					const title = row.title.toLowerCase();
+					if (!q || title.includes(q)) {
+						groups[row.type] = groups[row.type] || [];
+						groups[row.type].push(i);
+					}
+				});
+				// 清空並渲染結果
+				results.innerHTML = '';
+				Object.entries(groups).forEach(([type, idxs]) => {
+					const iconUrl = categoryIcons[type] || '';
+					const det = document.createElement('details');
+					det.open = true;
+					det.innerHTML = `
+	            <summary class="font-medium cursor-pointer">
+		    	${iconUrl ? `<img src="${iconUrl}" class="category-icon" alt="${type} icon">`: ''} ${IconNameMaper(type)} (${idxs.length})
+	            </summary>
+	            <ul class="pl-4 list-disc">
+	              ${idxs.map(i => `<li data-idx="${i}">${window.locdata[i].title}</li>`).join('')}
+	            </ul>
+	          `;
+					results.appendChild(det);
+				});
+				// 同步地圖 Marker & 卡片顯示
+				window.locdata.forEach((_, i) => {
+					const match = Object.values(groups).flat().includes(i);
+					// Marker
+					if (match) window.locmarkers[i].addTo(map);
+					else map.removeLayer(window.locmarkers[i]);
+					// 卡片
+					const cardEl = document.getElementById(`card-${i}`);
+					cardEl.style.display = match ? '' : 'none';
+				});
+			});
+			// 這行會攔截 panel 上的滾輪事件，不讓它往地圖傳遞
+			L.DomEvent.disableScrollPropagation(container);
+			return container;
+		}
+	});
+	// 把剛剛建立的 Control 加到地圖
+	map.addControl(new FilterControl());
+	
+	function createCard(card, index) {
+		const cardDiv = document.createElement('div');
+		cardDiv.className = 'story-card';
+		cardDiv.id = `card-${index}`;
+		// 2025.05.11 取得照片方式改以github workflow
+		const owner = 'sm245735';
+		const repo = 'confession-site';
+		const branch = 'main';
+		// Helper：給定 folderName 跟 image 檔名，回傳完整 raw URL
+		function makeRawUrl(folderName, fileName) {
+			let raw_url = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@main/images/${encodeURIComponent(folderName)}/${encodeURIComponent(fileName)}`;
+			// let raw_url = `./images/${encodeURIComponent(folderName)}/${encodeURIComponent(fileName)}`;	      
+			return raw_url;
+		}
+		// 拉取圖片清單 JSON
+		//const jsonUrl = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@main/image-list/${encodeURIComponent(card.folderName)}.json`;
+		const jsonUrl = `./image-list/${encodeURIComponent(card.folderName)}.json`;
+		let imgs = '';
+		fetch(jsonUrl).then(res => {
+			if (!res.ok) throw new Error(`讀取 JSON 失敗 ${res.status}`);
+			return res.json();
+		}).then(files => {
+			// 把檔名陣列轉成 <div class="swiper-slide"><img …></div> 字串
+			imgs = files.map(name => `<div class="swiper-slide">
+		                         <img src="${makeRawUrl(card.folderName, name)}" class="w-full">
+		                       </div>`).join('');
+			cardDiv.innerHTML = `
+		<div class="card-header p-4 flex justify-between items-center">
+		    <h2 class="text-lg font-bold entry-title">
+			<a href="javascript:;" onclick="if(confirm('確定要前往？')) window.open('${card.google_map_link}', '_blank')"
+			   class="inline-flex items-center space-x-2"
+			>
+			<img src="https://cdn-icons-png.flaticon.com/512/1865/1865269.png" alt="📌" class="ew-5 h-5 flex-shrink-0">
+	                &nbsp;
+			${card.title}
+			</a>
+		</h2>
+		    <!-- 收合按鈕 -->
+		    <button class="toggle-btn text-gray-500 hover:text-gray-800 focus:outline-none" aria-expanded="true" aria-label="收合／展開">
+		       <span class="arrow">▼</span>
+		    </button>
+		  </div>
+		<div class="card-body overflow-hidden transition-max-h duration-300 max-h-[1000px]">
+	        	<div class="swiper">
+		          <div class="swiper-wrapper">${imgs}</div>
+	        	  <div class="swiper-pagination"></div>
+		        </div>
+	        	<div class="p-4">
+	
+		          <p class="text-sm text-gray-500" ${larger_style} >${card.time} | ${card.subtitle}</p>
+	        	  <p class="mt-2 text-sm" ${larger_style}>${card.content}</p>
+		        </div>
+		</div>
+	      `;
+			document.getElementById('story-container').appendChild(cardDiv);
+		});
+	}
+	
+	function showCard(index) {
+		document.querySelectorAll('.story-card').forEach(el => el.classList.remove('active'));
+		const target = document.getElementById(`card-${index}`);
+		if (target) target.classList.add('active');
+	}
+	fetch('./data/diary.csv').then(res => res.text()).then(csvText => {
+		Papa.parse(csvText, {
+			header: true,
+			dynamicTyping: true,
+			complete: function(results) {
+				const rows = results.data.filter(r => r.lat && r.lng);
+				window.locdata = rows;
+				rows.forEach((row, index) => {
+					const marker = L.marker([row.lat, row.lng], {
+						icon: icons[row.type] || icons.walk
+					}).addTo(map);
+					window.locmarkers.push(marker)
+					marker.on('click', () => showCard(index));
+					createCard(row, index);
+				});
+				setTimeout(() => {
+					document.querySelectorAll('.swiper').forEach(swiperEl => {
+						new Swiper(swiperEl, {
+							autoHeight: true, // 自動調整高度
+							loop: true,
+							pagination: {
+								el: swiperEl.querySelector('.swiper-pagination')
+							}
+						});
+					});
+					showCard(0);
+				}, 100);
+			}
+		});
+	});
+	// 1. 在初始化階段就加一次
+	const container = document.getElementById('story-container');
+	container.addEventListener('click', e => {
+		// 找最近的 toggle-btn （支援點到裡面文字時也能抓到）
+		const btn = e.target.closest('.toggle-btn');
+		if (!btn) return;
+		// 再找出這個按鈕的卡片與內容區
+		const card = btn.closest('.story-card');
+		const body = card.querySelector('.card-body');
+		const expanded = btn.getAttribute('aria-expanded') === 'true';
+		if (expanded) {
+			body.classList.add('max-h-0');
+			btn.textContent = '►';
+			btn.setAttribute('aria-expanded', 'false');
+		} else {
+			body.classList.remove('max-h-0');
+			btn.textContent = '▼';
+			btn.setAttribute('aria-expanded', 'true');
+		}
+	});
+</script>
 </body>
 </html>
 
