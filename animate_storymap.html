@@ -142,6 +142,24 @@
       height: 88px !important;
     	}
     }
+   /* 手機板（max-width ≤ 480px）改成下面設定 */
+	@media (max-width: 480px) {
+	  .filter-panel {
+	    /* 改成相對視窗固定定位 */
+	    position: fixed !important;
+	    top: 50px;             /* 距離頂端 50px，可依你的 toolbar 高度微調 */
+	    left: 0 !important;    /* 貼齊左邊 */
+	    right: 0 !important;   /* 也貼齊右邊，寬度自動變成 100vw */
+	    margin: 0 !important;
+	    width: 100vw !important;
+	    max-width: none !important;
+	    border-radius: 0;      /* 去掉圓角，更像全寬面板 */
+	    box-shadow: none;      /* 或者輕微陰影 */
+	    height: calc(100vh - 50px);  /* 滿版高度，扣掉上方留白 */
+	    overflow-y: auto;      /* 內容若很多可滾動 */
+	  }
+	}
+   
    /* 筆電時再變窄一點 */
    @media (max-height: 700px) {
   	.story-card {
