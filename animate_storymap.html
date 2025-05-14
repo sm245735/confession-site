@@ -402,6 +402,7 @@
         // 清空並渲染結果
         results.innerHTML = '';
         Object.entries(groups).forEach(([type, idxs]) => {
+	  const iconUrl = categoryIcons[type] || '';
           const det = document.createElement('details');
           det.open = true;
           det.innerHTML = `
