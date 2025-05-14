@@ -1,0 +1,71 @@
+.story-card {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      z-index: 999;
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      max-width: 550px;
+      /*max-height: 80vh;*/
+      display: none;
+    }
+    .story-card.active {
+      display: block;
+    }
+
+/* 手機（或 max-width ≤ 768px）時，卡片最大寬度 200px，並置中 */
+@media (max-width: 768px) {
+.story-card {
+      /* 固定在視窗底部，靠左留 16px 距離 */
+  position: fixed !important;
+  bottom: 10px !important;
+  left: 16px !important;     /* 靠左 16px，你想留多少就改這裡 */
+  right: auto !important;    /* 不要同時指定 right */
+
+  /* 寬度撐滿剩餘空間 (減掉左右留白) */
+  width: 60% !important;      /* 撐到視窗寬度的 60% */
+  max-width: 350px !important;           /* 大螢幕別太寬 */
+
+  /* 清掉 transform 才不會被 Safari 搞亂 */
+  transform: none !important;
+  -webkit-transform: none !important;
+    }
+.toggle-btn {
+    /* 固定寬高，至少 44px */
+    width: 33px;
+    height: 33px;
+    /* 文字大小也一起放大 */
+    font-size: 1.25rem;  /* 約 20px */
+    /* 置中對齊 icon */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* 增加點擊範圍 */
+    padding: 0;
+  }
+/* 讓 .arrow 可以被旋轉 */
+.toggle-btn .arrow {
+  display: inline-block;               /* transform 生效 */
+  transition: transform .3s ease;      /* 平滑過渡 */
+  font-size: 1rem;                  /* 視需求調整大小 */
+  line-height: 1;                      /* 避免行高干擾 */
+}
+
+/* aria-expanded="false" 時，箭頭往右 */
+.toggle-btn[aria-expanded="false"] .arrow {
+  transform: rotate(-90deg);
+  height: 88px !important;
+  }
+}
+.entry-icon {
+  	vertical-align: middle;  /* 跟文字同一基線 */
+  	margin-right: 6px;        /* 圖標與文字之間空間 */ 
+}
+.entry-title {
+    font-size: 18px;
+    color: #333;  
+    display: inline-flex;
+    align-items: center;      /* 內部子項垂直置中 */
+}
+
