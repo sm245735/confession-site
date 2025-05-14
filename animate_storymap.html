@@ -387,7 +387,10 @@
           cardEl.style.display = match ? '' : 'none';
         });
       });
-  
+
+      // 這行會攔截 panel 上的滾輪事件，不讓它往地圖傳遞
+      L.DomEvent.disableScrollPropagation(container);
+	    
       return container;
     }
   });
