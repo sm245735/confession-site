@@ -202,21 +202,29 @@
       height: 88px !important;
     	}
     }
-   /* 手機板（max-width ≤ 480px）改成下面設定 */
-	@media (max-width: 480px) {
-	  .filter-panel {
-	    /* 改成相對視窗固定定位 */
+   @media (max-width: 480px) {
+	  .leaflet-control.filter-control .filter-panel {
+	    /* 改用 fixed 全螢幕定位 */
 	    position: fixed !important;
-	    top: 50px;             /* 距離頂端 50px，可依你的 toolbar 高度微調 */
-	    left: 0 !important;    /* 貼齊左邊 */
-	    right: 0 !important;   /* 也貼齊右邊，寬度自動變成 100vw */
+	    /* 距離頂端留出 Leaflet zoom 控制按鈕高度 */
+	    top: 56px !important;
+	    left: 8px !important;
+	    right: 8px !important;
 	    margin: 0 !important;
-	    width: 100vw !important;
+	
+	    /* 寬度自動：左右各留 8px */
+	    width: auto !important;
 	    max-width: none !important;
-	    border-radius: 0;      /* 去掉圓角，更像全寬面板 */
-	    box-shadow: none;      /* 或者輕微陰影 */
-	    height: calc(100vh - 50px);  /* 滿版高度，扣掉上方留白 */
-	    overflow-y: auto;      /* 內容若很多可滾動 */
+	
+	    /* 高度不超過視窗剩餘空間，內容過多可滾動 */
+	    max-height: calc(100vh - 64px) !important;
+	    overflow-y: auto !important;
+	
+	    /* 外觀微調 */
+	    border-radius: 0.5rem !important;
+	    padding: 1rem !important;
+	    background: rgba(255,255,255,0.95) !important;
+	    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
 	  }
 	}
    
