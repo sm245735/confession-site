@@ -385,8 +385,8 @@
         window.locdata.forEach((_, i) => {
           const match = Object.values(groups).flat().includes(i);
           // Marker
-          if (match) markers[i].addTo(map);
-          else map.removeLayer(markers[i]);
+          if (match) window.locmarkers[i].addTo(map);
+          else map.removeLayer(window.locmarkers[i]);
           // 卡片
           const cardEl = document.getElementById(`card-${i}`);
           cardEl.style.display = match ? '' : 'none';
