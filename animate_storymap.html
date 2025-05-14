@@ -221,7 +221,9 @@
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap 貢獻者'
     }).addTo(map);
-
+    // 宣告資料全域變數
+    window.locdata =[];
+    window.locmarkers =[];
 
     // 登入相關程式
     function doLogin() {
@@ -285,7 +287,7 @@
         const q = input.value.trim().toLowerCase();
         // 根據 rows 與 markers, cardDivs（需事先在全域或上層作用域準備好這三個陣列）
         const groups = {};
-        rows.forEach((row, i) => {
+        window.locdata.forEach((row, i) => {
           const title = row.title.toLowerCase();
           if (!q || title.includes(q)) {
             groups[row.type] = groups[row.type] || [];
@@ -308,7 +310,7 @@
         });
   
         // 同步地圖 Marker & 卡片顯示
-        rows.forEach((_, i) => {
+        window.locdata.forEach((_, i) => {
           const match = Object.values(groups).flat().includes(i);
           // Marker
           if (match) markers[i].addTo(map);
@@ -415,8 +417,10 @@
           dynamicTyping: true,
           complete: function(results) {
             const rows = results.data.filter(r => r.lat && r.lng);
+	    window.locdata = rows;
             rows.forEach((row, index) => {
               const marker = L.marker([row.lat, row.lng], { icon: icons[row.type] || icons.walk }).addTo(map);
+	      window.locmarkers = marker;
               marker.on('click', () => showCard(index));
               createCard(row, index);
             });
