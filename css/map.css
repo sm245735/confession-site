@@ -1,5 +1,4 @@
 /* 2. 主畫面（地圖＋卡片）預設隱藏 */
-
 #main-screen {
 	display: none;
 	height: 100vh;
@@ -13,4 +12,107 @@
 	height: 100vh;
 	/* 保留滿高 */
 	z-index: 0;
+}
+.leaflet-control.filter-control {
+	position: relative;
+}
+.leaflet-control.filter-btn {
+	position: relative;
+	z-index: 1100;
+	/* 比 filter-panel 的 1000 還要高 */
+}
+.filter-panel {
+	position: absolute;
+	/* 往右 100%（按鈕右側）＋往下 100%（按鈕下緣） */
+	left: 100%;
+	top: 0%;
+	/* 微調空隙 */
+	transform: translateX(4px);
+	/* 只往右移一點 */
+	z-index: 1000;
+	/* 以下是外觀與滾動設定 */
+	width: 16rem;
+	/* 256px，你可以改寬一點或窄一點 */
+	max-height: 80vh;
+	/* 最多不超過視窗高度的 80% */
+	overflow-y: auto;
+	/* 內容超出就捲動 */
+	background: rgba(255, 255, 255, 0.9);
+	backdrop-filter: blur(6px);
+	border-radius: .5rem;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	padding: .75rem;
+}
+/* 清單標題果折疊效果 */
+
+.filter-panel details {
+	border-bottom: 1px solid #e5e7eb;
+	/* gray-200 */
+	padding-bottom: .5rem;
+	margin-bottom: .5rem;
+}
+.filter-panel summary {
+	list-style: none;
+	display: flex;
+	align-items: center;
+	font-weight: 600;
+	cursor: pointer;
+	color: #111827;
+	padding: .25rem 0;
+}
+/* 自訂折疊箭頭 */
+
+.filter-panel summary::-webkit-details-marker {
+	display: none;
+}
+.filter-panel summary::before {
+	content: '▶';
+	display: inline-block;
+	transform: rotate(90deg);
+	transition: transform .2s;
+	margin-right: .5rem;
+	color: #6b7280;
+}
+.filter-panel details[open] summary::before {
+	transform: rotate(180deg);
+}
+.filter-panel summary .category-icon {
+	width: 16px;
+	height: 16px;
+	margin-right: 0.5rem;
+	flex-shrink: 0;
+}
+/* 清單項目 */
+
+.filter-panel ul {
+	margin-top: .5rem;
+	padding-left: 1rem;
+}
+.filter-panel li {
+	margin: .25rem 0;
+	cursor: pointer;
+	transition: color .2s;
+}
+.filter-panel li:hover {
+	color: #1f2937;
+}
+@media (max-width: 480px) {
+	.leaflet-control.filter-control .filter-panel {
+		/* 改成 fixed、並從按鈕下方開始 */
+		position: fixed !important;
+		top: 56px !important;
+		/* 推到放大鏡下方 56px */
+		left: 8px !important;
+		right: 8px !important;
+		margin: 0 !important;
+		width: auto !important;
+		max-height: calc(100vh - 64px) !important;
+		overflow-y: auto !important;
+		background: rgba(255, 255, 255, 0.95) !important;
+		padding: 1rem !important;
+		border-radius: .5rem !important;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+		/* 確保不被 Leaflet 其他控制項蓋住 */
+		z-index: 1000 !important;
+	}
 }
