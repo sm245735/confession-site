@@ -105,8 +105,8 @@
 		left: 8px !important;
 		right: 8px !important;
 		margin: 0 !important;
-		width: auto !important;
-		max-height: calc(100vh - 64px) !important;
+		width: 80% !important;
+		max-width: none !important;
 		overflow-y: auto !important;
 		background: rgba(255, 255, 255, 0.95) !important;
 		padding: 1rem !important;
