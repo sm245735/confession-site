@@ -84,6 +84,20 @@
     .story-card.active {
       display: block;
     }
+
+  /* 讓 filter-control 本身當作相對定位容器 */
+  .leaflet-control.filter-control {
+    position: relative;
+  }
+  /* 讓面板絕對定位到按鈕的右側 */
+  .filter-panel {
+    position: absolute;
+    top: 0;               /* 跟按鈕同一垂直位置 */
+    left: 100%;           /* 從容器最右側開始 */
+    margin-left: 4px;     /* 按鈕與面板之間留點空隙 */
+    z-index: 1000;        /* 確保蓋在地圖上 */
+    /* 其他你想要的樣式… */
+  }
     /* 手機（或 max-width ≤ 768px）時，卡片最大寬度 200px，並置中 */
     @media (max-width: 768px) {
   	.story-card {
