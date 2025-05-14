@@ -40,6 +40,8 @@
 	const isMobile = window.innerWidth <= 768;
 	const centerLat = isMobile ? 24 : 23.8;
 	const Level = isMobile ? 7 : 8;
+	const homeCenter = [centerLat, 121];
+	const homeZoom   = Level;
 	const larger_style = isMobile ? "" : "style=\"font-size: 1.2rem;\"";
 	const map = L.map('map').setView([centerLat, 121], Level);
 	L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
