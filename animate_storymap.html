@@ -149,6 +149,12 @@
 .filter-panel details[open] summary::before {
   transform: rotate(180deg);
 }
+.filter-panel summary .category-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
 
 /* 清單項目 */
 .filter-panel ul {
@@ -323,6 +329,32 @@
         if (e.key === "Enter") doLogin();
       });
 
+	  // 地圖icon
+ const icons = {
+      arrow: L.icon({iconUrl: 'https://cdn-icons-png.flaticon.com/512/4439/4439420.png', iconSize: [40, 40]}),
+      eat: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/1531/1531385.png', iconSize: [40, 40] }),
+      walk: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/2591/2591439.png', iconSize: [40, 40] }),
+      health: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/2382/2382461.png', iconSize: [40, 40] }),
+      buy: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/9284/9284424.png', iconSize: [40, 40] }),
+      bubbleTea: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/3081/3081162.png', iconSize: [40, 40] }),
+      motorcycle: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/1023/1023346.png', iconSize: [40, 40] }),
+    };
+
+    // 用 forEach取出icon與屬性的對應
+    // 之後結果篩選會用到
+	const categoryIcons = {};
+	Object.keys(icons).forEach(type => {
+	  categoryIcons[type] = icons[type].options.iconUrl;
+	});
+	// 結果長這樣：
+	// {
+	//   arrow:      'https://cdn-icons-png.flaticon.com/512/4439/4439420.png',
+	//   eat:        'https://cdn-icons-png.flaticon.com/512/1531/1531385.png',
+	//   walk:       'https://cdn-icons-png.flaticon.com/512/2591/2591439.png',
+	//   …
+	// }
+	  
+
 // 1. 定義一個 FilterControl（放大鏡 + 面板）
   const FilterControl = L.Control.extend({
     options: { position: 'topleft' },  // 顯示在左上角
@@ -373,7 +405,8 @@
           const det = document.createElement('details');
           det.open = true;
           det.innerHTML = `
-            <summary class="font-medium cursor-pointer">${type} (${idxs.length})</summary>
+            <summary class="font-medium cursor-pointer">${iconUrl ? `<img src="${iconUrl}" class="category-icon" alt="${type} icon">`
+        : '' ${type} (${idxs.length})</summary>
             <ul class="pl-4 list-disc">
               ${idxs.map(i => `<li data-idx="${i}">${window.locdata[i].title}</li>`).join('')}
             </ul>
@@ -402,15 +435,7 @@
   // 把剛剛建立的 Control 加到地圖
   map.addControl(new FilterControl());
 
-    const icons = {
-      arrow: L.icon({iconUrl: 'https://cdn-icons-png.flaticon.com/512/4439/4439420.png', iconSize: [40, 40]}),
-      eat: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/1531/1531385.png', iconSize: [40, 40] }),
-      walk: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/2591/2591439.png', iconSize: [40, 40] }),
-      health: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/2382/2382461.png', iconSize: [40, 40] }),
-      buy: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/9284/9284424.png', iconSize: [40, 40] }),
-      bubbleTea: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/3081/3081162.png', iconSize: [40, 40] }),
-      motorcycle: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/1023/1023346.png', iconSize: [40, 40] }),
-    };
+   
 
     function createCard(card, index) {
       const cardDiv = document.createElement('div');
