@@ -249,33 +249,81 @@
         if (e.key === "Enter") doLogin();
       });
 
-    	// 定義一個新的 Control
-	const FilterControl = L.Control.extend({
-	  options: { position: 'topleft' }, // 可改成 'topright'
-	  onAdd: function(map) {
-	    const btn = L.DomUtil.create('button', '');
-	    const panel = document.getElementById('filter-panel');
-	    btn.innerHTML = '🔍';
-	    btn.title = '篩選';
-	    btn.style.width = '34px';
-	    btn.style.height = '34px';
-	    btn.style.lineHeight = '34px';
-	    btn.style.textAlign = 'center';
-	    btn.style.cursor = 'pointer';
-	    btn.style.fontSize = '18px';
-	    // 點擊切換篩選面板
-	    L.DomEvent.on(btn, 'click', e => {
-	      L.DomEvent.stopPropagation(e);
-	      panel.classList.toggle('hidden');
-	      if (!panel.classList.contains('hidden')) {
-	        input.focus();
-	      }
-	    });
-	    return btn;
-	  }
-	});
-	// 把剛剛建立的 Control 加到地圖
-	map.addControl(new FilterControl());
+// 1. 定義一個 FilterControl（放大鏡 + 面板）
+  const FilterControl = L.Control.extend({
+    options: { position: 'topleft' },  // 顯示在左上角
+    onAdd(map) {
+      // 容器
+      const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control filter-control');
+      // 按鈕
+      const btn = L.DomUtil.create('a', 'filter-btn', container);
+      btn.href = '#';
+      btn.title = '篩選地點';
+      btn.innerHTML = '🔍';
+  
+      // 面板
+      const panel = L.DomUtil.create('div', 'filter-panel hidden', container);
+      // 輸入框
+      const input = L.DomUtil.create('input', '', panel);
+      input.type = 'text';
+      input.placeholder = '輸入關鍵字篩選...';
+      input.className = 'p-1 m-2 border rounded w-[200px]';
+  
+      // 篩選結果容器
+      const results = L.DomUtil.create('div', 'filter-results p-2', panel);
+  
+      // 阻止點擊事件冒泡到地圖
+      L.DomEvent.disableClickPropagation(container);
+      L.DomEvent.on(btn, 'click', e => {
+        L.DomEvent.stop(e);
+        panel.classList.toggle('hidden');
+        if (!panel.classList.contains('hidden')) input.focus();
+      });
+  
+      // 處理輸入即時篩選
+      L.DomEvent.on(input, 'input', () => {
+        const q = input.value.trim().toLowerCase();
+        // 根據 rows 與 markers, cardDivs（需事先在全域或上層作用域準備好這三個陣列）
+        const groups = {};
+        rows.forEach((row, i) => {
+          const title = row.title.toLowerCase();
+          if (!q || title.includes(q)) {
+            groups[row.type] = groups[row.type] || [];
+            groups[row.type].push(i);
+          }
+        });
+  
+        // 清空並渲染結果
+        results.innerHTML = '';
+        Object.entries(groups).forEach(([type, idxs]) => {
+          const det = document.createElement('details');
+          det.open = true;
+          det.innerHTML = `
+            <summary class="font-medium cursor-pointer">${type} (${idxs.length})</summary>
+            <ul class="pl-4 list-disc">
+              ${idxs.map(i => `<li data-idx="${i}">${rows[i].title}</li>`).join('')}
+            </ul>
+          `;
+          results.appendChild(det);
+        });
+  
+        // 同步地圖 Marker & 卡片顯示
+        rows.forEach((_, i) => {
+          const match = Object.values(groups).flat().includes(i);
+          // Marker
+          if (match) markers[i].addTo(map);
+          else map.removeLayer(markers[i]);
+          // 卡片
+          const cardEl = document.getElementById(`card-${i}`);
+          cardEl.style.display = match ? '' : 'none';
+        });
+      });
+  
+      return container;
+    }
+  });
+  // 把剛剛建立的 Control 加到地圖
+  map.addControl(new FilterControl());
 
     const icons = {
       arrow: L.icon({iconUrl: 'https://cdn-icons-png.flaticon.com/512/4439/4439420.png', iconSize: [40, 40]}),
