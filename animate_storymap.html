@@ -99,6 +99,54 @@
 	  transform: translate(4px, -50%);
 	  z-index: 1000;
 	}
+	/* 把 details／summary 改成好看又可收合的樣式 */
+	#filter-panel details {
+	  border-bottom: 1px solid #e5e7eb; /* Tailwind gray-200 */
+	  padding-bottom: 0.5rem;           /* 2 */
+	}
+	
+	#filter-panel summary {
+	  list-style: none;                 /* 取消預設箭頭 */
+	  display: flex;
+	  justify-content: space-between;
+	  align-items: center;
+	  font-weight: 600;                 /* semibold */
+	  cursor: pointer;
+	  color: #111827;                   /* gray-900 */
+	  padding: 0.25rem 0;               /* 1 */
+	}
+	
+	/* 自訂箭頭符號 */
+	#filter-panel summary::-webkit-details-marker {
+	  display: none;
+	}
+	#filter-panel summary:before {
+	  content: '▶';
+	  display: inline-block;
+	  transform: rotate(90deg);
+	  transition: transform 0.2s;
+	  margin-right: 0.5rem;             /* 2 */
+	  color: #6b7280;                   /* gray-500 */
+	}
+	#filter-panel details[open] summary:before {
+	  transform: rotate(180deg);
+	}
+	
+	/* 清單內文 */
+	#filter-panel ul {
+	  margin-top: 0.5rem;              /* 2 */
+	  padding-left: 1rem;              /* 4 */
+	}
+	#filter-panel li {
+	  margin: 0.25rem 0;               /* 1 */
+	  cursor: pointer;
+	  transition: color 0.2s;
+	}
+	#filter-panel li:hover {
+	  color: #1f2937;                  /* hover 上深一點 gray-800 */
+	}
+
+	  
     /* 手機（或 max-width ≤ 768px）時，卡片最大寬度 200px，並置中 */
     @media (max-width: 768px) {
   	.story-card {
@@ -273,7 +321,7 @@
       input.className = 'p-1 m-2 border rounded w-[200px]';
   
       // 篩選結果容器
-      const results = L.DomUtil.create('div', 'filter-results p-2', panel);
+      const results = L.DomUtil.create('div', 'filter-results space-y-4 text-gray-700 text-sm', panel);
   
       // 阻止點擊事件冒泡到地圖
       L.DomEvent.disableClickPropagation(container);
