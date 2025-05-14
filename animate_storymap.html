@@ -303,7 +303,7 @@
           det.innerHTML = `
             <summary class="font-medium cursor-pointer">${type} (${idxs.length})</summary>
             <ul class="pl-4 list-disc">
-              ${idxs.map(i => `<li data-idx="${i}">${rows[i].title}</li>`).join('')}
+              ${idxs.map(i => `<li data-idx="${i}">${window.locdata[i].title}</li>`).join('')}
             </ul>
           `;
           results.appendChild(det);
