@@ -88,6 +88,10 @@
 .leaflet-control.filter-control {
   position: relative;
 }
+.leaflet-control.filter-btn {
+  position: relative;
+  z-index: 1100;  /* 比 filter-panel 的 1000 還要高 */
+}
 .filter-panel {
   position: absolute;
   /* 往右 100%（按鈕右側）＋往下 100%（按鈕下緣） */
@@ -203,28 +207,25 @@
     }
    @media (max-width: 480px) {
 	  .leaflet-control.filter-control .filter-panel {
-	    /* 改用 fixed 全螢幕定位 */
-	    position: fixed !important;
-	    /* 距離頂端留出 Leaflet zoom 控制按鈕高度 */
-	    top: 56px !important;
-	    left: 8px !important;
-	    right: 8px !important;
-	    margin: 0 !important;
-	
-	    /* 寬度自動：左右各留 8px */
-	    width: auto !important;
-	    max-width: none !important;
-	
-	    /* 高度不超過視窗剩餘空間，內容過多可滾動 */
-	    max-height: calc(100vh - 64px) !important;
-	    overflow-y: auto !important;
-	
-	    /* 外觀微調 */
-	    border-radius: 0.5rem !important;
-	    padding: 1rem !important;
-	    background: rgba(255,255,255,0.95) !important;
-	    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-	  }
+		/* 改成 fixed、並從按鈕下方開始 */
+		position: fixed !important;
+		top: 56px !important;     /* 推到放大鏡下方 56px */
+		left: 8px !important;
+		right: 8px !important;
+		margin: 0 !important;
+		
+		width: auto !important;
+		max-height: calc(100vh - 64px) !important;
+		overflow-y: auto !important;
+		
+		background: rgba(255,255,255,0.95) !important;
+		padding: 1rem !important;
+		border-radius: .5rem !important;
+		box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+		
+		/* 確保不被 Leaflet 其他控制項蓋住 */
+		z-index: 1000 !important;
+		}
 	}
    
    /* 筆電時再變窄一點 */
