@@ -165,18 +165,19 @@
        <div id="map"></div>
        <div id="story-container"></div>
     </div>
-  <script>
-  <!-- 篩選面板 -->
+	<!-- 篩選面板 -->
   <div id="filter-panel"
-     class="hidden absolute top-14 left-4 z-50 bg-white p-4 rounded shadow w-64 max-h-[70vh] overflow-auto">
-	  <input id="filter-input"
-	         type="text"
-	         placeholder="輸入篩選關鍵字…"
-	         class="w-full mb-2 p-2 border rounded">
-	  <div id="filter-results" class="text-sm space-y-2">
-	    <!-- 這裡會動態填入分組後的 <details>…</details> -->
-	  </div>
-	</div>
+	class="hidden absolute top-14 left-4 z-50 bg-white p-4 rounded shadow w-64 max-h-[70vh] overflow-auto">
+    <input id="filter-input"
+  	 type="text"
+  	 placeholder="輸入篩選關鍵字…"
+  	 class="w-full mb-2 p-2 border rounded">
+    <div id="filter-results" class="text-sm space-y-2">
+  	<!-- 這裡會動態填入分組後的 <details>…</details> -->
+    </div>
+  </div>
+  <script>
+  
 
     // 假設小於等於 768px 我們就當成手機
     const isMobile = window.innerWidth <= 768;
