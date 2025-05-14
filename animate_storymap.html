@@ -172,7 +172,7 @@
 					const rect = btn.getBoundingClientRect();
 					// 固定定位，緊貼按鈕右下方
 					panel.style.position = 'fixed';
-					panel.style.top = `${rect.bottom}px`;
+					panel.style.top = `${rect.top}px`;
 					panel.style.left = `${rect.right + 4}px`; // 右邊留4px間距
 					panel.style.transform = 'none';
 					input.focus();
