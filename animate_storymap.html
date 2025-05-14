@@ -164,7 +164,7 @@
 			L.DomEvent.disableClickPropagation(container);
 			L.DomEvent.on(btn, 'click', e => {
 				L.DomEvent.stop(e);
-				panel.classList.toggle('hidden');
+				//panel.classList.toggle('hidden');
 				//if (!panel.classList.contains('hidden')) input.focus();
 				const isOpen = !panel.classList.toggle('hidden');
 				if (isOpen) {
