@@ -338,7 +338,8 @@
       bubbleTea: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/3081/3081162.png', iconSize: [40, 40] }),
       motorcycle: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/1023/1023346.png', iconSize: [40, 40] }),
     };
-
+function 
+	
     // 用 forEach取出icon與屬性的對應
     // 之後結果篩選會用到
 	const categoryIcons = {};
@@ -521,7 +522,7 @@
 	    window.locdata = rows;
             rows.forEach((row, index) => {
               const marker = L.marker([row.lat, row.lng], { icon: icons[row.type] || icons.walk }).addTo(map);
-	      window.locmarkers = marker;
+	      window.locmarkers.push(marker)
               marker.on('click', () => showCard(index));
               createCard(row, index);
             });
