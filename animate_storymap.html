@@ -91,13 +91,14 @@
   }
   /* 讓面板絕對定位到按鈕的右側 */
   .filter-panel {
-    position: absolute;
-    top: 0;               /* 跟按鈕同一垂直位置 */
-    left: 100%;           /* 從容器最右側開始 */
-    margin-left: 4px;     /* 按鈕與面板之間留點空隙 */
-    z-index: 1000;        /* 確保蓋在地圖上 */
-    /* 其他你想要的樣式… */
-  }
+	  position: absolute;
+	  /* 把面板的水平起點放在按鈕右側 */
+	  left: 100%;
+	  /* 用 top:50% + translateY(-50%) 讓面板中心對齊父容器中心 */
+	  top: 50%;
+	  transform: translate(4px, -50%);
+	  z-index: 1000;
+	}
     /* 手機（或 max-width ≤ 768px）時，卡片最大寬度 200px，並置中 */
     @media (max-width: 768px) {
   	.story-card {
