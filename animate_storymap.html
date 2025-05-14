@@ -10,55 +10,12 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="./css/login.css" />
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
 
-        /* 1. 登入區塊專屬樣式，不影響其他區域 */
-    #login-screen {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #FFEDE2, #FFF9F3);
-      font-family: "微軟正黑體", sans-serif;
-      z-index: 100;
-    }
-    #login-screen .login-box {
-      width: 300px;
-      padding: 30px;
-      background: rgba(255,255,255,0.9);
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    #login-screen input {
-      width: 100%;
-      padding: 10px;
-      margin: 12px 0;
-      border: 1.5px solid #FFD1D1;
-      border-radius: 8px;
-    }
-    #login-screen button {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      background: #FF8C94;
-      color: #fff;
-      cursor: pointer;
-      transition: background .2s;
-    }
-    #login-screen button:hover {
-      background: #FF6F61;
-    }
-    #login-screen .error {
-      color: #E05A63;
-      display: none;
-      margin-top: 8px;
-      font-size: 14px;
-    }
+       
 
     /* 2. 主畫面（地圖＋卡片）預設隱藏 */
     #main-screen {
