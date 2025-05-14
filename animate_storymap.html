@@ -227,11 +227,31 @@
 	            <summary class="font-medium cursor-pointer">
 		    	${iconUrl ? `<img src="${iconUrl}" class="category-icon" alt="${type} icon">`: ''} ${IconNameMaper(type)} (${idxs.length})
 	            </summary>
-	            <ul class="pl-4 list-disc">
-	              ${idxs.map(i => `<li data-idx="${i}">${window.locdata[i].title}</li>`).join('')}
-	            </ul>
+	             <ul class="pl-4 list-disc">
+		      ${idxs.map(i =>
+		        `<li data-idx="${i}" style="cursor:pointer;">${window.locdata[i].title}</li>`
+		      ).join('')}
+		     </ul>`
 	          `;
 					results.appendChild(det);
+
+
+  // 綁定點擊飛轉
+  det.querySelectorAll('li').forEach(li => {
+    li.addEventListener('click', () => {
+      const idx = Number(li.dataset.idx);
+      const row = window.locdata[idx];
+      // 飛轉到該 marker
+      map.flyTo([row.lat, row.lng], isMobile ? 12 : 14, {
+        duration: 0.8
+      });
+      // 顯示該卡片
+      showCard(idx);
+      // 同時隱藏篩選面板
+      panel.classList.add('hidden');
+    });
+  });
+
 				});
 				// 同步地圖 Marker & 卡片顯示
 				window.locdata.forEach((_, i) => {
