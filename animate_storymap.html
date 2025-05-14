@@ -406,8 +406,9 @@
           const det = document.createElement('details');
           det.open = true;
           det.innerHTML = `
-            <summary class="font-medium cursor-pointer">${iconUrl ? `<img src="${iconUrl}" class="category-icon" alt="${type} icon">`
-        : '' ${type} (${idxs.length})</summary>
+            <summary class="font-medium cursor-pointer">
+	    	${iconUrl ? `<img src="${iconUrl}" class="category-icon" alt="${type} icon">`: ''} ${type} (${idxs.length})
+            </summary>
             <ul class="pl-4 list-disc">
               ${idxs.map(i => `<li data-idx="${i}">${window.locdata[i].title}</li>`).join('')}
             </ul>
