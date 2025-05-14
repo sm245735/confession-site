@@ -250,17 +250,17 @@ function IconNameMaper(eng_name){
 	
     // 用 forEach取出icon與屬性的對應
     // 之後結果篩選會用到
-	const categoryIcons = {};
-	Object.keys(icons).forEach(type => {
-	  categoryIcons[type] = icons[type].options.iconUrl;
-	});
-	// 結果長這樣：
-	// {
-	//   arrow:      'https://cdn-icons-png.flaticon.com/512/4439/4439420.png',
-	//   eat:        'https://cdn-icons-png.flaticon.com/512/1531/1531385.png',
-	//   walk:       'https://cdn-icons-png.flaticon.com/512/2591/2591439.png',
-	//   …
-	// }
+    const categoryIcons = {};
+    Object.keys(icons).forEach(type => {
+      categoryIcons[type] = icons[type].options.iconUrl;
+    });
+    // 結果長這樣：
+    // {
+    //   arrow:      'https://cdn-icons-png.flaticon.com/512/4439/4439420.png',
+    //   eat:        'https://cdn-icons-png.flaticon.com/512/1531/1531385.png',
+    //   walk:       'https://cdn-icons-png.flaticon.com/512/2591/2591439.png',
+    //   …
+    // }
 	  
 
 // 1. 定義一個 FilterControl（放大鏡 + 面板）
@@ -291,7 +291,18 @@ function IconNameMaper(eng_name){
       L.DomEvent.on(btn, 'click', e => {
         L.DomEvent.stop(e);
         panel.classList.toggle('hidden');
-        if (!panel.classList.contains('hidden')) input.focus();
+        //if (!panel.classList.contains('hidden')) input.focus();
+	const isOpen = !panel.classList.toggle('hidden');
+	if (isOpen) {
+	// 動態取按鈕在視窗的位置
+	const rect = btn.getBoundingClientRect();
+	// 固定定位，緊貼按鈕右下方
+	panel.style.position = 'fixed';
+	panel.style.top  = `${rect.bottom}px`;
+	panel.style.left = `${rect.right + 4}px`; // 右邊留4px間距
+	panel.style.transform = 'none';
+	input.focus();
+	}
       });
   
       // 處理輸入即時篩選
