@@ -187,11 +187,11 @@
 			L.DomEvent.on(btn, 'click', e => {
 			  L.DomEvent.stop(e);
 			
-			  // 切換一次 hidden，並取得最新狀態
+			  // 只呼叫一次 toggle，回傳目前是否隱藏
 			  const nowHidden = panel.classList.toggle('hidden');
 			
 			  if (!nowHidden) {
-			    // 1. 先把面板顯示出來，才能讀到它的 offsetWidth/offsetHeight
+			    // 先暫時顯示才能量尺寸
 			    panel.style.visibility = 'hidden';
 			    panel.style.display    = 'block';
 			
@@ -201,26 +201,26 @@
 			    const ww   = window.innerWidth;
 			    const wh   = window.innerHeight;
 			
-			    // 2. 計算水平位置：預設放右邊，若超出就改放左邊
+			    // 水平：預設放右邊，若溢出就放左邊
 			    let left = rect.right + 4;
 			    if (left + pw > ww) {
 			      left = rect.left - pw - 4;
-			      if (left < 4) left = 4;   // 最少留 4px 邊距
+			      if (left < 4) left = 4;
 			    }
 			
-			    // 3. 計算垂直位置：預設放下方，若超出就改放上方
-			    let top = rect.bottom + 4;
+			    // 垂直：頂邊對齊按鈕頂邊；若溢出則往上頂，但不超出 4px
+			    let top = rect.top;
 			    if (top + ph > wh) {
-			      top = rect.top - ph - 4;
-			      if (top < 4) top = 4;     // 最少留 4px 邊距
+			      top = wh - ph - 4;
+			      if (top < 4) top = 4;
 			    }
 			
-			    // 4. 套用定位，恢復可視
+			    // 套上最終定位
 			    Object.assign(panel.style, {
-			      position:  'fixed',
-			      left:      `${left}px`,
-			      top:       `${top}px`,
-			      transform: 'none',
+			      position:   'fixed',
+			      left:       `${left}px`,
+			      top:        `${top}px`,
+			      transform:  'none',
 			      visibility: 'visible'
 			    });
 			
