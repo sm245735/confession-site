@@ -68,6 +68,28 @@
 	document.getElementById("password").addEventListener("keydown", e => {
 		if (e.key === "Enter") doLogin();
 	});
+	
+	const HomeControl = L.Control.extend({
+	  options: { position: 'topleft' },
+	  onAdd(map) {
+	    const btn = L.DomUtil.create('a', 'leaflet-bar leaflet-control home-btn');
+	    btn.href = '#';
+	    btn.title = '回到原點';
+	    btn.innerHTML = '🏠';
+	    L.DomEvent.on(btn, 'click', e => {
+	      L.DomEvent.stop(e);
+	      map.flyTo(homeCenter, homeZoom, { duration: 0.8 });
+	      // 隱藏所有卡片
+	      document.querySelectorAll('.story-card').forEach(c => c.style.display = 'none');	      
+	      // 動態找到 filter-panel 並隱藏
+	      const filterPanel = document.querySelector('.filter-panel');
+	      if (filterPanel) filterPanel.classList.add('hidden');
+		    });
+		    return btn;
+	  }
+	});
+	map.addControl(new HomeControl());
+	
 	// 地圖icon
 	const icons = {
 		arrow: L.icon({
