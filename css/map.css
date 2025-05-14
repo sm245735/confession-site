@@ -1,0 +1,16 @@
+/* 2. 主畫面（地圖＋卡片）預設隱藏 */
+
+#main-screen {
+	display: none;
+	height: 100vh;
+	margin: 0;
+	padding: 0;
+	/* 你可以在這裡加上地圖或卡片的全域佈局背景 */
+}
+#map {
+	width: 100%;
+	/* 取代 100vw 避免iphone破版 */
+	height: 100vh;
+	/* 保留滿高 */
+	z-index: 0;
+}
