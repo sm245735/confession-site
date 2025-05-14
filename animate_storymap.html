@@ -295,7 +295,31 @@
       bubbleTea: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/3081/3081162.png', iconSize: [40, 40] }),
       motorcycle: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/1023/1023346.png', iconSize: [40, 40] }),
     };
-function 
+function IconNameMaper(eng_name){
+	let chi_name = '尚未定義';
+	if(eng_name =="arrow"){
+	   chi_name = '射箭';
+	}
+	if(eng_name =="eat"){
+	   chi_name = '飯飯';
+	}
+	if(eng_name =="walk"){
+	   chi_name = '逛逛';
+	}
+	if(eng_name =="health"){
+	   chi_name = '健康';
+	}
+	if(eng_name =="buy"){
+	   chi_name = '買買買';
+	}
+	if(eng_name =="bubbleTea"){
+	   chi_name = '奶茶';
+	}
+	if(eng_name =="motorcycle"){
+	   chi_name = '車車';
+	}
+	return chi_name;
+}
 	
     // 用 forEach取出icon與屬性的對應
     // 之後結果篩選會用到
@@ -364,7 +388,7 @@ function
           det.open = true;
           det.innerHTML = `
             <summary class="font-medium cursor-pointer">
-	    	${iconUrl ? `<img src="${iconUrl}" class="category-icon" alt="${type} icon">`: ''} ${type} (${idxs.length})
+	    	${iconUrl ? `<img src="${iconUrl}" class="category-icon" alt="${type} icon">`: ''} ${IconNameMaper(type)} (${idxs.length})
             </summary>
             <ul class="pl-4 list-disc">
               ${idxs.map(i => `<li data-idx="${i}">${window.locdata[i].title}</li>`).join('')}
