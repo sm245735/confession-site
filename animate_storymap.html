@@ -222,6 +222,7 @@
 	  options: { position: 'topleft' }, // 可改成 'topright'
 	  onAdd: function(map) {
 	    const btn = L.DomUtil.create('button', '');
+	    const panel = document.getElementById('filter-panel');
 	    btn.innerHTML = '🔍';
 	    btn.title = '篩選';
 	    btn.style.width = '34px';
