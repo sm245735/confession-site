@@ -267,14 +267,14 @@ const FilterControl = L.Control.extend({
 				const det = document.createElement('details');
 				det.open = true;
 				det.innerHTML = `
-	            <summary class="font-medium cursor-pointer">
-		    	${iconUrl ? `<img src="${iconUrl}" class="category-icon" alt="${type} icon">`: ''} ${IconNameMaper(type)} (${idxs.length})
-	            </summary>
-	             <ul class="pl-4 list-disc">
-		      ${idxs.map(i =>
-		        `<li data-idx="${i}" style="cursor:pointer;">${window.locdata[i].title}</li>`
-		      ).join('')}
-		     </ul>`;
+			            <summary class="font-medium cursor-pointer">
+				    	${iconUrl ? `<img src="${iconUrl}" class="category-icon" alt="${type} icon">`: ''} ${IconNameMaper(type)} (${idxs.length})
+			            </summary>
+			             <ul class="pl-4 list-disc">
+				      ${idxs.map(i =>
+				        `<li data-idx="${i}" style="cursor:pointer;">${window.locdata[i].title}</li>`
+				      ).join('')}
+				     </ul>`;
 				results.appendChild(det);
 				const toggleAllBtnEl = panel.querySelector('#toggle-all-btn');
 				if (Object.keys(groups).length > 0) {
