@@ -31,22 +31,7 @@
 </div><!-- 篩選面板 -->
 <div class="hidden absolute top-14 left-4 z-50 bg-white p-4 rounded shadow w-64 max-h-[70vh] overflow-auto filter-panel" id="filter-panel">
 	<input class="w-full mb-2 p-2 border rounded" id="filter-input" placeholder="輸入篩選關鍵字…" type="text">
-	<!-- 新增：全部收合／展開按鈕 -->
-	<div class="flex justify-end mb-2">
-	    <button
-		  id="toggle-all"
-		  class="toggle-all-btn flex items-center space-x-2
-		         px-4 py-2
-		         bg-gradient-to-r from-pink-400 to-pink-600
-		         text-white font-medium
-		         rounded-full shadow-lg
-		         hover:shadow-xl active:scale-95
-		         transition-all duration-200
-		         focus:outline-none mb-3"
-	    >
-	    <span id="toggle-all-icon">🔽</span>
-	    <span id="toggle-all-text">全部收合</span>
-       </div>
+	<!-- 會動態產生全部收合按鈕 -->
 	<div class="text-sm space-y-2" id="filter-results">
 		<!-- 這裡會動態填入分組後的 <details>…</details> -->
 	</div>
@@ -208,11 +193,25 @@ const FilterControl = L.Control.extend({
 		input.type = 'text';
 		input.placeholder = '輸入關鍵字篩選...';
 		input.className = 'p-1 border rounded w-full box-border mb-3';
-		// 建完 input 之後，立刻拿到統一收合按鈕
-		const toggleAllBtn = L.DomUtil.create('button', 'toggle-all-btn text-sm text-blue-600 hover:underline focus:outline-none mb-2 hidden', panel);
-		toggleAllBtn.id = 'toggle-all-btn';
-		toggleAllBtn.innerText = '全部收合';
-		// 阻止它的事件冒泡到地圖
+		// 建按鈕並加入 panel
+		const toggleAllBtn = L.DomUtil.create('button', '', panel);
+		toggleAllBtn.id = 'toggle-all';
+		toggleAllBtn.innerHTML = `
+		  <span id="toggle-all-icon">🔽</span>
+		  <span id="toggle-all-text">全部收合</span>
+		`;
+		// 給它完整的 Tailwind 膠囊樣式，移除 hidden
+		toggleAllBtn.className = `
+		  toggle-all-btn flex items-center space-x-2
+		  px-4 py-2
+		  bg-gradient-to-r from-pink-400 to-pink-600
+		  text-white font-medium
+		  rounded-full shadow-lg
+		  hover:shadow-xl active:scale-95
+		  transition-all duration-200
+		  focus:outline-none mb-3
+		`;
+		// 阻止冒泡
 		L.DomEvent.disableClickPropagation(toggleAllBtn);
 		// 綁定點擊：操作 panel 裡所有 <details>
 		L.DomEvent.on(toggleAllBtn, 'click', e => {
@@ -330,6 +329,9 @@ const FilterControl = L.Control.extend({
 					});
 				});
 			});
+			const hasResults = panel.querySelectorAll('details').length > 0;
+			toggleAllBtn.classList.toggle('hidden', !hasResults);
+			
 			// 同步地圖 Marker & 卡片顯示
 			window.locdata.forEach((_, i) => {
 				const match = Object.values(groups).flat().includes(i);
