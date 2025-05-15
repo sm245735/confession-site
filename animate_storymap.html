@@ -122,6 +122,10 @@
 			iconUrl: 'https://cdn-icons-png.flaticon.com/512/1023/1023346.png',
 			iconSize: [40, 40]
 		}),
+		play: L.icon({
+			iconUrl: 'https://cdn-icons-png.flaticon.com/512/4854/4854246.png',
+			iconSize: [40, 40]
+		}),		
 	};
 	
 	function IconNameMaper(eng_name) {
@@ -146,6 +150,9 @@
 		}
 		if (eng_name == "motorcycle") {
 			chi_name = '車車';
+		}
+		if (eng_name == "play"){
+			chi_name = '玩玩';
 		}
 		return chi_name;
 	}
