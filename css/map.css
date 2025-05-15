@@ -132,7 +132,7 @@
 		position: fixed !important;
 		top: 56px !important;
 		/* 推到放大鏡下方 56px */
-		left: 8px !important;
+		left: 16px !important;
 		right: 8px !important;
 		margin: 0 !important;
 		width: 80% !important;
