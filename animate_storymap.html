@@ -31,6 +31,22 @@
 </div><!-- 篩選面板 -->
 <div class="hidden absolute top-14 left-4 z-50 bg-white p-4 rounded shadow w-64 max-h-[70vh] overflow-auto filter-panel" id="filter-panel">
 	<input class="w-full mb-2 p-2 border rounded" id="filter-input" placeholder="輸入篩選關鍵字…" type="text">
+	<!-- 新增：全部收合／展開按鈕 -->
+	<div class="flex justify-end mb-2">
+	    <button
+		  id="toggle-all"
+		  class="toggle-all-btn flex items-center space-x-2
+		         px-4 py-2
+		         bg-gradient-to-r from-pink-400 to-pink-600
+		         text-white font-medium
+		         rounded-full shadow-lg
+		         hover:shadow-xl active:scale-95
+		         transition-all duration-200
+		         focus:outline-none mb-3"
+	    >
+	    <span id="toggle-all-icon">🔽</span>
+	    <span id="toggle-all-text">全部收合</span>
+       </div>
 	<div class="text-sm space-y-2" id="filter-results">
 		<!-- 這裡會動態填入分組後的 <details>…</details> -->
 	</div>
@@ -430,6 +446,13 @@ container.addEventListener('click', e => {
 		btn.setAttribute('aria-expanded', 'true');
 	}
 });
+
+	//
+const toggle_icon = document.getElementById('toggle-all-icon');
+const toggle_text = document.getElementById('toggle-all-text');
+// 展開後改成「🔼 全部收合」
+toggle_icon.innerText = allOpen ? '🔼' : '🔽';
+toggle_text.innerText = allOpen ? '全部收合' : '全部展開';
 </script>
 </body>
 </html>
