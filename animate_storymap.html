@@ -408,9 +408,15 @@ function createCard(card, index) {
 }
 
 function showCard(index) {
-	document.querySelectorAll('.story-card').forEach(el => el.classList.remove('active'));
+	document.querySelectorAll('.story-card').forEach(el => {
+	    el.classList.remove('active');
+	    el.style.display = '';         // ← 清掉上一次 inline hide
+	  });
 	const target = document.getElementById(`card-${index}`);
-	if (target) target.classList.add('active');
+	if (target) {
+	    target.classList.add('active');
+	    target.style.display = 'block'; // ← 確保這張卡片顯示
+	  }
 }
 fetch('./data/diary.csv').then(res => res.text()).then(csvText => {
 	Papa.parse(csvText, {
