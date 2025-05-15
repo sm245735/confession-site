@@ -18,6 +18,7 @@
   /* 完全不透明，背景純白 */
   background-color: #ffffff !important;
   opacity: 1 !important;
+  cursor: pointer;
 
   /* 微調尺寸與外觀 */
   width: 36px !important;
@@ -121,7 +122,9 @@
 	transition: color .2s;
 }
 .filter-panel li:hover {
-	color: #1f2937;
+	color: deeppink;
+        background-color: lavenderblush;
+        border-radius: 10px;
 }
 @media (max-width: 480px) {
 	.leaflet-control.filter-control .filter-panel {
