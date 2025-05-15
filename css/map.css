@@ -126,6 +126,12 @@
         background-color: lavenderblush;
         border-radius: 10px;
 }
+
+.filter-panel.hidden {
+  display: none !important;
+  visibility: hidden !important;
+}
+
 /*
 @media (max-width: 480px) {
 	.leaflet-control.filter-control .filter-panel {
