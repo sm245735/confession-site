@@ -126,6 +126,7 @@
         background-color: lavenderblush;
         border-radius: 10px;
 }
+/*
 @media (max-width: 480px) {
 	.leaflet-control.filter-control .filter-panel {
 		/* 改成 fixed、並從按鈕下方開始 */
@@ -146,3 +147,4 @@
 		z-index: 1000 !important;
 	}
 }
+*/
