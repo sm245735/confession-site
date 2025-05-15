@@ -13,10 +13,32 @@
 	/* 保留滿高 */
 	z-index: 0;
 }
+/* 針對 Home Control 按鈕 */
 .leaflet-control.home-btn {
+  /* 完全不透明，背景純白 */
+  background-color: #ffffff !important;
+  opacity: 1 !important;
+
+  /* 微調尺寸與外觀 */
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
   text-align: center;
-  font-size: 18px;
-  line-height: 26px;
+  font-size: 20px !important;
+
+  /* 邊框圓角＋陰影 */
+  border-radius: 6px !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
+
+  /* 置中圖示 */
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 滑鼠（或手指）懸停時色調變化，增加互動感 */
+.leaflet-control.home-btn:hover {
+  background-color: #f0f0f0 !important;
 }
 .leaflet-control.filter-control {
 	position: relative;
