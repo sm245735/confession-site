@@ -429,13 +429,21 @@ fetch('./data/diary.csv').then(res => res.text()).then(csvText => {
 			});
 			setTimeout(() => {
 				document.querySelectorAll('.swiper').forEach(swiperEl => {
-					new Swiper(swiperEl, {
-						autoHeight: true, // 自動調整高度
-						loop: true,
-						pagination: {
-							el: swiperEl.querySelector('.swiper-pagination')
-						}
-					});
+					const slidesCount = swiperEl.querySelectorAll('.swiper-slide').length;
+					  const swiperOptions = {
+					    autoHeight: true,
+					    pagination: { el: swiperEl.querySelector('.swiper-pagination') }
+					  };
+					  // slides 少於 2 張就不開 loop
+					  if (slidesCount > 1) {
+					    swiperOptions.loop = true;
+					  }
+					
+					  try {
+					    new Swiper(swiperEl, swiperOptions);
+					  } catch (err) {
+					    console.error('Swiper init failed:', err);
+					  }
 				});
 				showCard(0);
 			}, 100);
