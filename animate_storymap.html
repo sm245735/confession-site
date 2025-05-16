@@ -227,6 +227,11 @@ const FilterControl = L.Control.extend({
 					// 如果你之前是用 style.display 控制，也一起隱藏
 					c.style.display = 'none';
 				});
+
+				// 清空使用者輸入篩選條件
+				input.value = '';
+				// 自動觸發input事件
+    				input.dispatchEvent(new Event('input'));
 				
 				// 先暫時顯示才能量尺寸
 				panel.style.visibility = 'hidden';
