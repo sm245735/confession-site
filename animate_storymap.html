@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="./css/login.css" />
   <link rel="stylesheet" href="./css/card.css" />
   <link rel="stylesheet" href="./css/map.css" />
+  <script src="./js/login.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 </head>
@@ -51,27 +52,6 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // 宣告資料全域變數
 window.locdata = [];
 window.locmarkers = [];
-
-// 登入相關程式
-function doLogin() {
-	const pass = document.getElementById("password").value;
-	const validPass = "1131229"; // 改成你的密碼
-	if (pass === validPass) {
-		// 隱藏登入、顯示主畫面
-		document.getElementById("login-screen").style.display = "none";
-		document.getElementById("main-screen").style.display = "block";
-		// 2. 等一下再重算地圖大小
-		setTimeout(() => {
-			map.invalidateSize(true);
-		}, 200);
-	} else {
-		document.getElementById("err").style.display = "block";
-	}
-}
-// 支援按 Enter 鍵登入
-document.getElementById("password").addEventListener("keydown", e => {
-	if (e.key === "Enter") doLogin();
-});
 const HomeControl = L.Control.extend({
 	options: {
 		position: 'topleft'
