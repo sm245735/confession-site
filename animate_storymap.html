@@ -392,28 +392,17 @@ function createCard(card, index) {
 	      `;
 		document.getElementById('story-container').appendChild(cardDiv);
 
-		setTimeout(() => {
-				const swiperEl = cardDiv.querySelector('.swiper');
-				const slideCount = files.length;
-				document.querySelectorAll('.swiper').forEach(swiperEl => {
-					const slidesCount = swiperEl.querySelectorAll('.swiper-slide').length;
-					  const swiperOptions = {
-					    autoHeight: true,
-					    pagination: { el: swiperEl.querySelector('.swiper-pagination') }
-					  };
-					  // slides 少於 2 張就不開 loop
-					  if (slidesCount > 1) {
-					    swiperOptions.loop = true;
-					  }
-					
-					  try {
-					    new Swiper(swiperEl, swiperOptions);
-					  } catch (err) {
-					    console.error('Swiper init failed:', err);
-					  }
-				});
-				// showCard(0);
-			}, 100);
+		// （2）立刻初始化這張卡片的 Swiper
+		  const swiperEl = cardDiv.querySelector('.swiper');
+		  const slideCount = files.length;
+		  new Swiper(swiperEl, {
+		    autoHeight: true,
+		    pagination: { el: swiperEl.querySelector('.swiper-pagination') },
+		    loop: slideCount > 1     // 只有超過一張才開 loop
+		  });
+
+		  // （3）如果你想第一張卡片一出現就直接展示，可以：
+		  if (index === 0) showCard(0);
 	});
 }
 
